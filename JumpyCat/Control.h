@@ -1,0 +1,14 @@
+#pragma once
+
+static enum class CONTROLS
+{
+    NOTHING,
+    PRESSED_DOWN,
+    RELEASED_DOWN,
+    PRESSED_UP,
+    RELEASED_UP,
+    PRESSED_LEFT,
+    RELEASED_LEFT,
+    PRESSED_RIGHT,
+    RELEASED_RIGHT,
+};
