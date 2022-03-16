@@ -15,10 +15,10 @@ public:
     virtual void onExit(Player& player) {};
 };
 
-class DuckingState : public IPlayerState
+class PlayerDuckingState : public IPlayerState
 {
 public:
-    DuckingState();
+    PlayerDuckingState();
     virtual IPlayerState* handleInput(Player& player, Input input);
     virtual void update(Player& player, float dt);
     virtual void onEntry(Player& player);
@@ -29,29 +29,29 @@ private:
 };
 
 
-class StandingState : public IPlayerState
+class PlayerStandingState : public IPlayerState
 {
 public:
-    StandingState() {};
+    PlayerStandingState() {};
     virtual IPlayerState* handleInput(Player& player, Input input);
     virtual void update(Player& player, float dt);
     virtual void onEntry(Player& player);
     virtual void onExit(Player& player);
 };
 
-class MovingState : public IPlayerState
+class PlayerMovingState : public IPlayerState
 {
 public:
     float m_movementSpeed;
 
-    MovingState();
+    PlayerMovingState();
     virtual IPlayerState* handleInput(Player& player, Input input);
     virtual void update(Player& player, float dt);
     virtual void onEntry(Player& player);
     virtual void onExit(Player& player);
 };
 
-class JumpingState : public IPlayerState
+class PlayerJumpingState : public IPlayerState
 {
 public:
     float m_movementSpeed;
@@ -59,21 +59,21 @@ public:
     float m_hangTime;
     float m_maxHangTime;
 
-    JumpingState();
+    PlayerJumpingState();
     virtual IPlayerState* handleInput(Player& player, Input input);
     virtual void update(Player& player, float dt);
     virtual void onEntry(Player& player);
     virtual void onExit(Player& player);
 };
 
-class FallingState : public IPlayerState
+class PlayerFallingState : public IPlayerState
 {
 public:
     float m_movementSpeed;
     float m_coyoteTime;
     bool m_coyoteEnabled;
 
-    FallingState(bool coyoteEnabled = false);
+    PlayerFallingState(bool coyoteEnabled = false);
     virtual IPlayerState* handleInput(Player& player, Input input);
     virtual void update(Player& player, float dt);
     virtual void onEntry(Player& player);

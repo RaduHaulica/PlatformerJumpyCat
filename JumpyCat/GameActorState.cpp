@@ -1,28 +1,28 @@
-#include "PlayerState.h"
+#include "GameActorState.h"
 
 #include "Input.h"
-#include "Player.h"
+#include "GameActorBase.h"
 
 // ===== ===== ===== ===== DUCKING STATE ===== ===== ===== =====
 
-PlayerDuckingState::PlayerDuckingState() :
+DuckingState::DuckingState() :
     m_chargeTime{ 0 }
 {}
 
-void PlayerDuckingState::update(Player& player, float dt)
+void DuckingState::update(GameActorBase& player, float dt)
 {
     m_chargeTime += dt;
-    if (m_chargeTime > Player::MAX_CHARGE_TIME)
+    if (m_chargeTime > GameActorBase::MAX_CHARGE_TIME)
     {
         player.explode();
     }
 }
 
-IPlayerState* PlayerDuckingState::handleInput(Player& player, Input input)
+IGameActorState* DuckingState::handleInput(GameActorBase& player, Input input)
 {
     if (!player.isGrounded())
     {
-        return new PlayerFallingState();
+        return new FallingState();
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
@@ -34,11 +34,11 @@ IPlayerState* PlayerDuckingState::handleInput(Player& player, Input input)
     }
     if (input.control == CONTROLS::RELEASED_DOWN)
     {
-        return new PlayerStandingState();
+        return new StandingState();
     }
     return nullptr; // stay in current state
 }
-void PlayerDuckingState::onEntry(Player& player)
+void DuckingState::onEntry(GameActorBase& player)
 {
     sf::Vector2f colliderSize = player.m_colliderComponent.m_colliders[0].getSize();
     colliderSize.y = colliderSize.y / 2;
@@ -53,7 +53,7 @@ void PlayerDuckingState::onEntry(Player& player)
     player.setPosition(player.m_position);
     player.m_currentStateName = "ducking";
 }
-void PlayerDuckingState::onExit(Player& player)
+void DuckingState::onExit(GameActorBase& player)
 {
     sf::Vector2f colliderSize = player.m_colliderComponent.m_colliders[0].getSize();
     player.m_colliderComponent.m_offsets[0] -= sf::Vector2f({ 0, colliderSize.y });
@@ -65,39 +65,39 @@ void PlayerDuckingState::onExit(Player& player)
 
 // ===== ===== ===== ===== STANDING STATE ===== ===== ===== =====
 
-void PlayerStandingState::update(Player& player, float dt)
+void StandingState::update(GameActorBase& player, float dt)
 {
 
 }
 
-IPlayerState* PlayerStandingState::handleInput(Player& player, Input input)
+IGameActorState* StandingState::handleInput(GameActorBase& player, Input input)
 {
     if (!player.isGrounded())
     {
-        return new PlayerFallingState();
+        return new FallingState();
     }
     if (input.control == CONTROLS::PRESSED_UP)
     {
-        return new PlayerJumpingState();
+        return new JumpingState();
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
         player.faceLeft();
-        return new PlayerMovingState();
+        return new MovingState();
     }
     if (input.control == CONTROLS::PRESSED_RIGHT)
     {
         player.faceRight();
-        return new PlayerMovingState();
+        return new MovingState();
     }
     if (input.control == CONTROLS::PRESSED_DOWN)
     {
-        return new PlayerDuckingState();
+        return new DuckingState();
     }
 
     return nullptr; // stay in current state
 }
-void PlayerStandingState::onEntry(Player& player)
+void StandingState::onEntry(GameActorBase& player)
 {
     player.setMessage("Entered StandingState");
     player.m_acceleration = { 0.0f, 0.0f };
@@ -107,7 +107,7 @@ void PlayerStandingState::onEntry(Player& player)
     player.setPosition(player.m_position);
     player.m_currentStateName = "standing";
 }
-void PlayerStandingState::onExit(Player& player)
+void StandingState::onExit(GameActorBase& player)
 {
     player.setMessage("Exited StandingState\n");
     player.m_graphicsComponent.reset();
@@ -115,23 +115,23 @@ void PlayerStandingState::onExit(Player& player)
 
 // ===== ===== ===== ===== MOVING STATE ===== ===== ===== =====
 
-PlayerMovingState::PlayerMovingState():
+MovingState::MovingState() :
     m_movementSpeed{ 400.0f }
 {}
 
-void PlayerMovingState::update(Player& player, float dt)
+void MovingState::update(GameActorBase& player, float dt)
 {
 }
 
-IPlayerState* PlayerMovingState::handleInput(Player& player, Input input)
+IGameActorState* MovingState::handleInput(GameActorBase& player, Input input)
 {
     if (!player.isGrounded())
     {
-        return new PlayerFallingState(true);
+        return new FallingState(true);
     }
     if (input.control == CONTROLS::PRESSED_UP)
     {
-        return new PlayerJumpingState();
+        return new JumpingState();
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
@@ -147,21 +147,21 @@ IPlayerState* PlayerMovingState::handleInput(Player& player, Input input)
     }
     if (input.control == CONTROLS::RELEASED_LEFT)
     {
-        return new PlayerStandingState();
+        return new StandingState();
     }
     if (input.control == CONTROLS::RELEASED_RIGHT)
     {
-        return new PlayerStandingState();
+        return new StandingState();
     }
     if (input.control == CONTROLS::PRESSED_DOWN)
     {
-        return new PlayerDuckingState();
+        return new DuckingState();
     }
 
     return nullptr; // stay in current state
 }
 
-void PlayerMovingState::onEntry(Player& player)
+void MovingState::onEntry(GameActorBase& player)
 {
     player.m_graphicsComponent.m_currentAnimation = "moving";
     player.m_graphicsComponent.reset();
@@ -169,7 +169,7 @@ void PlayerMovingState::onEntry(Player& player)
     player.m_currentStateName = "moving";
     player.setMessage("Entered MovingState");
 }
-void PlayerMovingState::onExit(Player& player)
+void MovingState::onExit(GameActorBase& player)
 {
     player.setMessage("Exited MovingState\n");
     player.m_graphicsComponent.reset();
@@ -177,14 +177,14 @@ void PlayerMovingState::onExit(Player& player)
 
 // ===== ===== ===== ===== JUMPING STATE ===== ===== ===== =====
 
-PlayerJumpingState::PlayerJumpingState():
+JumpingState::JumpingState() :
     m_movementSpeed{ 200.0f },
     m_hangTime{ 0.0f },
     m_maxHangTime{ 0.1f },
-    m_peaked{false}
+    m_peaked{ false }
 {}
 
-void PlayerJumpingState::update(Player& player, float dt)
+void JumpingState::update(GameActorBase& player, float dt)
 {
     if (m_peaked)
     {
@@ -193,11 +193,11 @@ void PlayerJumpingState::update(Player& player, float dt)
     }
 }
 
-IPlayerState* PlayerJumpingState::handleInput(Player& player, Input input)
+IGameActorState* JumpingState::handleInput(GameActorBase& player, Input input)
 {
     if (player.isGrounded())
     {
-        return new PlayerStandingState();
+        return new StandingState();
     }
     if (player.m_touchingTop)
     {
@@ -219,13 +219,13 @@ IPlayerState* PlayerJumpingState::handleInput(Player& player, Input input)
     }
     if (m_hangTime > m_maxHangTime)
     {
-        return new PlayerFallingState();
+        return new FallingState();
     }
 
     return nullptr; // stay in current state
 }
 
-void PlayerJumpingState::onEntry(Player& player)
+void JumpingState::onEntry(GameActorBase& player)
 {
     player.setMessage("Entered JumpingState");
     player.m_grounded = false;
@@ -238,7 +238,7 @@ void PlayerJumpingState::onEntry(Player& player)
     player.setPosition(player.m_position);
     player.m_currentStateName = "jumping";
 }
-void PlayerJumpingState::onExit(Player& player)
+void JumpingState::onExit(GameActorBase& player)
 {
     player.setMessage("Exited JumpingState\n");
     player.m_jumping = false;
@@ -247,22 +247,22 @@ void PlayerJumpingState::onExit(Player& player)
 
 // ===== ===== ===== ===== FALLING STATE ===== ===== ===== =====
 
-PlayerFallingState::PlayerFallingState(bool coyoteEnabled):
+FallingState::FallingState(bool coyoteEnabled) :
     m_movementSpeed{ 200.0f },
     m_coyoteTime{ 0.0f },
     m_coyoteEnabled{ coyoteEnabled }
 {}
 
-void PlayerFallingState::update(Player& player, float dt)
+void FallingState::update(GameActorBase& player, float dt)
 {
     m_coyoteTime += dt;
 }
 
-IPlayerState* PlayerFallingState::handleInput(Player& player, Input input)
+IGameActorState* FallingState::handleInput(GameActorBase& player, Input input)
 {
     if (m_coyoteEnabled && input.control == CONTROLS::PRESSED_UP && m_coyoteTime < 0.1f)
     {
-        return new PlayerJumpingState();
+        return new JumpingState();
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
@@ -286,13 +286,13 @@ IPlayerState* PlayerFallingState::handleInput(Player& player, Input input)
     }
     if (player.isGrounded())
     {
-        return new PlayerStandingState();
+        return new StandingState();
     }
 
     return nullptr; // stay in current state
 }
 
-void PlayerFallingState::onEntry(Player& player)
+void FallingState::onEntry(GameActorBase& player)
 {
     player.setMessage("Entered FallingState");
     player.m_velocity.x = 0.0f;
@@ -305,7 +305,7 @@ void PlayerFallingState::onEntry(Player& player)
     player.m_grounded = false;
     player.m_platform = nullptr;
 }
-void PlayerFallingState::onExit(Player& player)
+void FallingState::onExit(GameActorBase& player)
 {
     player.setMessage("Exited FallingState\n");
     player.m_graphicsComponent.reset();

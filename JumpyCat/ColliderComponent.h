@@ -2,50 +2,27 @@
 
 #include <SFML/Graphics.hpp>
 
-class GameObject;
+#include <iostream>
+
+class GameObjectBase;
 
 class ColliderComponent: public sf::Drawable
 {
 public:
-	GameObject* m_parent;
+	GameObjectBase* m_parent;
 
 	std::vector<sf::RectangleShape> m_colliders;
 	std::vector<sf::Vector2f> m_offsets;
 
-	void setPosition(sf::Vector2f position)
-	{
-		for (int i = 0; i < m_colliders.size(); i++)
-		{
-			m_colliders[i].setPosition(position);
-		}
-	}
+	void setPosition(sf::Vector2f position);
 
-	void addColliders(std::vector<sf::RectangleShape> colliders, std::vector<sf::Vector2f> offsets)
-	{
-		for (int i = 0; i < colliders.size(); i++)
-		{
-			m_colliders.push_back(colliders[i]);
-			if (offsets.size() > 0)
-				m_offsets.push_back(offsets[i]);
-		}
-	}
+	void onEntry(GameObjectBase* intruder);
+	void onHold(GameObjectBase* intruder);
+	void onExit(GameObjectBase* intruder);
 
-	void update(float dt, sf::Vector2f position)
-	{
-		for (int i = 0; i < m_colliders.size(); i++)
-		{
-			m_colliders[i].setPosition(position + m_offsets[i]);
-		}
-	}
+	void addColliders(std::vector<sf::RectangleShape> colliders, std::vector<sf::Vector2f> offsets);
 
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
-	{
-		//if (config.debug)
-		{
-			for (int i = 0; i < m_colliders.size(); i++)
-			{
-				target.draw(m_colliders[i]);
-			}
-		}
-	}
+	void update(float dt, sf::Vector2f position);
+
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

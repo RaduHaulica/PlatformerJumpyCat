@@ -37,7 +37,7 @@ sf::Vector2f rotateVector(sf::Vector2f v, float angle)
     return sf::Vector2f({ norm(v) * cos(oldAngle + angle), norm(v) * sin(oldAngle + angle) });
 }
 
-bool checkCollision(sf::RectangleShape r1, sf::RectangleShape r2)
+bool checkRectangleCollision(sf::RectangleShape r1, sf::RectangleShape r2)
 {
     sf::RectangleShape newRS;
     newRS.setPosition(r1.getPosition() - r2.getSize());

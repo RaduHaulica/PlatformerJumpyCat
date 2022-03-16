@@ -6,30 +6,31 @@
 #include "GameEngine.h"
 #include "TextureManager.h"
 #include "Player.h"
+#include "GameObjectWall.h"
 
 class GameObjectFactory
 {
     TextureManager& m_tm;
     GameEngine& m_engine;
-    GameObject* m_prototype;
+    GameObjectBase* m_prototype;
 
-    GameObjectFactory(TextureManager& tm, GameEngine& engine, GameObject* prototype):
+    GameObjectFactory(TextureManager& tm, GameEngine& engine, GameObjectBase* prototype):
         m_tm{tm},
         m_engine{engine},
         m_prototype{prototype}
     {}
 
-    GameObject* createObject(sf::Vector2f position)
+    GameObjectBase* createObject(sf::Vector2f position)
     {
-        GameObject* newObj = m_prototype->clone(position);
+        GameObjectBase* newObj = m_prototype->clone(position);
         newObj->setPosition(position);
         return newObj;
     }
 };
 
-void loadPlayerGraphics(TextureManager& tm, Player& player)
+void loadPlayerGraphics(TextureManager& tm, Player* player)
 {
-    float sizeX{ 120 }, sizeY{ 100 };
+    float sizeX{ 100 }, sizeY{ 90 };
     float texSizeX{ 542 }, texSizeY{ 474 };
     Animation standingAnimation(tm.getTexture("cat_standing"), 10, {texSizeX, texSizeY}, {sizeX, sizeY}, 1.0f, true);
     Animation jumpingAnimation(tm.getTexture("cat_jumping"), 8, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
@@ -37,46 +38,51 @@ void loadPlayerGraphics(TextureManager& tm, Player& player)
     Animation duckingAnimation(tm.getTexture("cat_ducking"), 10, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, true);
     Animation fallingAnimation(tm.getTexture("cat_falling"), 8, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
 
-    player.m_graphicsComponent.addAnimation("standing", standingAnimation);
-    player.m_graphicsComponent.addAnimation("jumping", jumpingAnimation);
-    player.m_graphicsComponent.addAnimation("moving", movingAnimation);
-    player.m_graphicsComponent.addAnimation("ducking", duckingAnimation);
-    player.m_graphicsComponent.addAnimation("falling", fallingAnimation);
+    player->m_graphicsComponent.addAnimation("standing", standingAnimation, {-25, 0});
+    player->m_graphicsComponent.addAnimation("jumping", jumpingAnimation, { -25, 0 });
+    player->m_graphicsComponent.addAnimation("moving", movingAnimation, { -25, 0 });
+    player->m_graphicsComponent.addAnimation("ducking", duckingAnimation, { -25, 0 });
+    player->m_graphicsComponent.addAnimation("falling", fallingAnimation, { -25, 0 });
+
+    player->initializeState();
 
     sf::RectangleShape collider1 = sf::RectangleShape();
     collider1.setFillColor(sf::Color::Transparent);
     collider1.setOutlineColor(sf::Color::Green);
     collider1.setOutlineThickness(1);
     collider1.setPosition(sf::Vector2f({ 400.0f, 250.0f }));
-    collider1.setSize({ 50, 100 });
-    player.m_colliderComponent.addColliders({ collider1 }, { {30,0} });
+    collider1.setSize({ 50, 90 });
+    player->m_colliderComponent.addColliders({ collider1 }, { {0,0} });
 
-    player.initializeFeelers();
+    player->initializeFeelers();
 }
 
-void loadReaperGraphics(TextureManager& tm, GameObject* reaper)
+void loadReaperGraphics(TextureManager& tm, Player* reaper)
 {
-    float sizeX{ 100 }, sizeY{ 100 };
+    float sizeX{ 100 }, sizeY{ 90 };
     float texSizeX{ 900 }, texSizeY{ 900 };
     Animation walkingAnimation(tm.getTexture("reaper_walking"), 23, { texSizeX, texSizeY }, { sizeX, sizeY }, 2.0f, true);
 
-    reaper->m_graphicsComponent.addAnimation("walking", walkingAnimation);
-    reaper->m_graphicsComponent.m_currentAnimation = "walking";
+    reaper->m_graphicsComponent.addAnimation("standing", walkingAnimation, { 0,0 });
+    reaper->m_graphicsComponent.m_currentAnimation = "standing";
+    reaper->initializeState();
 
     sf::RectangleShape collider1 = sf::RectangleShape();
     collider1.setFillColor(sf::Color::Transparent);
     collider1.setOutlineColor(sf::Color::Green);
     collider1.setOutlineThickness(1);
     collider1.setPosition(sf::Vector2f({ 400.0f, 250.0f }));
-    collider1.setSize({ 50, 100 });
+    collider1.setSize({ 50, 90 });
     reaper->m_colliderComponent.addColliders({ collider1 }, { {30,0} });
+
+    reaper->initializeFeelers();
 }
 
 void createTile(TextureManager& textureManager, GameEngine& engine, sf::Vector2f position)
 {
-    GameObject* tile = new GameObject();
+    GameObjectWall* tile = new GameObjectWall();
     Animation tileAnimation(textureManager.getTexture("tile"), 1, { 128, 128 }, { 100, 100 }, 0.0f, false);
-    tile->m_graphicsComponent.addAnimation("tile", tileAnimation);
+    tile->m_graphicsComponent.addAnimation("tile", tileAnimation, { 0, 0 });
     tile->m_graphicsComponent.m_currentAnimation = "tile";
     tile->m_graphicsComponent.m_animations["tile"].m_animationFrames[0].setPosition(position);
     sf::RectangleShape collider1 = sf::RectangleShape();
@@ -94,7 +100,7 @@ void createBackground(TextureManager& textureManager, GameEngine& engine, sf::Ve
 {
     Scenery* background = new Scenery();
     Animation backgroundAnimation(textureManager.getTexture("background"), 1, { 1000, 800 }, { 1920, 1080 }, 0.0f, false);
-    background->m_graphicsComponent.addAnimation("background", backgroundAnimation);
+    background->m_graphicsComponent.addAnimation("background", backgroundAnimation, { 0, 0 });
     background->m_graphicsComponent.m_currentAnimation = "background";
     background->m_graphicsComponent.m_animations["background"].m_animationFrames[0].setPosition(position);
     engine.addScenery(background);
@@ -180,20 +186,15 @@ int main()
     miniMapView.setSize(2 * 1920, 1080);
     miniMapView.setViewport(sf::FloatRect(0.70f, 0.0f, 0.30f, 0.15f));
 
-
-
-    float dt;
-    sf::Clock frameClock;
-
     TextureManager textureManager;
 
     Player* player = new Player("It's a-me, Mario!", { 120, 100 });
-    loadPlayerGraphics(textureManager, *player);
-    player->setPosition({ 400, -1300 });
+    loadPlayerGraphics(textureManager, player);
+    player->setPosition({ 400, 400 });
 
     Player* reaper = new Player("Reaper", { 100, 100 });
     loadReaperGraphics(textureManager, reaper);
-    reaper->setPosition({ 700, -1300 });
+    reaper->setPosition({ 700, -300 });
 
     GameEngine engine;
     loadScenery(textureManager, engine);
@@ -241,6 +242,8 @@ int main()
     frame.setPosition({ 10, 10 });
     frame.setSize({ 1920 * 2 - 20 , 1080 - 20 });
 
+    float dt;
+    sf::Clock frameClock;
 
     while (window.isOpen())
     {
@@ -259,6 +262,7 @@ int main()
         dt = frameClock.restart().asSeconds();
         
         // ===== INPUT =====
+        // in engine update
         std::vector<Input> input = engine.collectInput();
         engine.handleInput(input);
 
@@ -266,10 +270,10 @@ int main()
         engine.update(dt);
 
         //mainView.setCenter(engine.getPlayerPosition());
-        sf::Vector2f playerPosition = engine.getPlayerPosition();
         window.setView(mainView);
+        sf::Vector2f playerPosition = engine.getPlayerPosition();
         playerPosition = (sf::Vector2f)window.mapCoordsToPixel(playerPosition, mainView);
-        std::cout << "Player position: ( " << playerPosition.x << " , " << playerPosition.y << " )\n";
+        //std::cout << "Player position: ( " << playerPosition.x << " , " << playerPosition.y << " )\n";
         float width = 1920.0f;
         float height = 1080.0f;
         if (playerPosition.x < width / 3)

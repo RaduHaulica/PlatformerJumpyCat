@@ -1,25 +1,25 @@
-#include "Player.h"
+#include "GameActorBase.h"
 
 #include "Input.h"
-#include "PlayerState.h"
+#include "GameActorState.h"
 #include "GameEngine.h"
 
-const float Player::MAX_CHARGE_TIME = 2.0f;
+const float GameActorBase::MAX_CHARGE_TIME = 2.0f;
 
-Player::Player(std::string name, sf::Vector2f size) :
+GameActorBase::GameActorBase(std::string name, sf::Vector2f size) :
     m_name{ name },
     m_size{ size },
-    m_currentStateName { "" },
+    m_currentStateName{ "" },
     m_facingRight{ true },
-    m_grounded{false},
-    m_touchingLeft{false},
-    m_touchingRight{false},
-    m_touchingTop{false},
+    m_grounded{ false },
+    m_touchingLeft{ false },
+    m_touchingRight{ false },
+    m_touchingTop{ false },
     m_acceleration{ sf::Vector2f({ 0.0f, 0.0f }) },
     m_velocity{ sf::Vector2f({ 0.0f, 0.0f }) },
     m_positionOffset{ sf::Vector2f({ 0.0f, 0.0f }) },
     m_jumpHeightFactor{ 3.0f },
-    m_platform { nullptr }
+    m_platform{ nullptr }
 {
     m_feelers.setPrimitiveType(sf::PrimitiveType::Points);
     //m_graphicsComponent.m_currentAnimation = "standing";
@@ -29,7 +29,7 @@ Player::Player(std::string name, sf::Vector2f size) :
     m_anchor.setRadius(5);
 }
 
-void Player::update(float dt)
+void GameActorBase::update(float dt)
 {
     m_currentState->update(*this, dt);
 
@@ -43,7 +43,7 @@ void Player::update(float dt)
     auto [x, y] = m_graphicsComponent.getScale();
     if ((m_facingRight && x < 0) || (!m_facingRight && x > 0))
     {
-		m_graphicsComponent.setScale({ -x, y });
+        m_graphicsComponent.setScale({ -x, y });
     }
     if (!m_facingRight)
     {
@@ -58,22 +58,22 @@ void Player::update(float dt)
     initializeFeelers();
 }
 
-void Player::handleInput(Input input)
+void GameActorBase::handleInput(Input input)
 {
-    IPlayerState* newState = m_currentState->handleInput(*this, input);
+    IGameActorState* newState = m_currentState->handleInput(*this, input);
     if (newState != nullptr)
     {
         m_currentState->onExit(*this);
 
-	    delete m_currentState;
-		m_currentState = newState;
+        delete m_currentState;
+        m_currentState = newState;
 
-		m_currentState->onEntry(*this);
+        m_currentState->onEntry(*this);
     }
 
 }
 
-void Player::initializeFeelers()
+void GameActorBase::initializeFeelers()
 {
     sf::RectangleShape collider = m_colliderComponent.m_colliders[0];
 
@@ -101,7 +101,7 @@ void Player::initializeFeelers()
     m_feelers.append({ topRightFeeler, color });
 }
 
-void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void GameActorBase::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(m_graphicsComponent, states);
     target.draw(m_colliderComponent, states);
@@ -110,7 +110,7 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(m_feelers);
 }
 
-void Player::setPosition(sf::Vector2f position)
+void GameActorBase::setPosition(sf::Vector2f position)
 {
     m_anchor.setPosition(position);
     GameObjectBase::setPosition(position);
@@ -126,7 +126,7 @@ void Player::setPosition(sf::Vector2f position)
     }
 }
 
-bool Player::isGrounded()
+bool GameActorBase::isGrounded()
 {
     //return m_grounded;
     if (!m_platform)
@@ -147,17 +147,17 @@ bool Player::isGrounded()
         m_platform = nullptr;
 
         // BUG FIX
-		// changing platforms looks like a visual bug because it's a transition MOVING -> FALLING -> STANDING
-		std::vector<GameObjectBase*> walls = m_parentGameEngine->getWalls();
-		for (int i = 0; i < walls.size(); i++)
-		{
-			if (walls[i]->m_colliderComponent.m_colliders[0].getGlobalBounds().contains(bottomLeftFeeler) ||
-				walls[i]->m_colliderComponent.m_colliders[0].getGlobalBounds().contains(bottomRightFeeler))
-			{
-				m_platform = walls[i];
-				return true;
-			}
-		}
+        // changing platforms looks like a visual bug because it's a transition MOVING -> FALLING -> STANDING
+        std::vector<GameObjectBase*> walls = m_parentGameEngine->getWalls();
+        for (int i = 0; i < walls.size(); i++)
+        {
+            if (walls[i]->m_colliderComponent.m_colliders[0].getGlobalBounds().contains(bottomLeftFeeler) ||
+                walls[i]->m_colliderComponent.m_colliders[0].getGlobalBounds().contains(bottomRightFeeler))
+            {
+                m_platform = walls[i];
+                return true;
+            }
+        }
         // END BUG FIX
 
         return false;
@@ -165,14 +165,14 @@ bool Player::isGrounded()
 
 }
 
-void Player::initializeState()
+void GameActorBase::initializeState()
 {
-    m_currentState = new PlayerStandingState();
+    m_currentState = new StandingState();
     m_currentState->onEntry(*this);
     m_graphicsComponent.m_currentAnimation = "standing";
 }
 
-void Player::collideWall(GameObjectBase* collidedObject)
+void GameActorBase::collideWall(GameObjectBase* collidedObject)
 {
     GameObjectBase::collide(collidedObject);
     m_collided = true;
@@ -188,8 +188,8 @@ void Player::collideWall(GameObjectBase* collidedObject)
     sf::RectangleShape r2 = m_colliderComponent.m_colliders[0];
     sf::Vector2f position = r2.getPosition();
 
-    float thresholdX = r1.getSize().x/10;
-    float thresholdY = r1.getSize().y/10;
+    float thresholdX = r1.getSize().x / 10;
+    float thresholdY = r1.getSize().y / 10;
 
     if (std::fabs(r1.getPosition().x - r2.getPosition().x - r2.getSize().x) < thresholdX)
     {

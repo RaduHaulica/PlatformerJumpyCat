@@ -22,11 +22,14 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="Control.h" />
+    <ClInclude Include="GameActorBase.h" />
+    <ClInclude Include="GameActorState.h" />
     <ClInclude Include="GameEngine.h" />
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectWall.h" />
     <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Interfaces.h" />
+    <ClInclude Include="GameObjectBase.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerState.h" />
     <ClInclude Include="Scenery.h" />
@@ -35,14 +38,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="ColliderComponent.cpp" />
+    <ClCompile Include="GameActorBase.cpp" />
+    <ClCompile Include="GameActorState.cpp" />
     <ClCompile Include="GameEngine.cpp" />
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectWall.cpp" />
+    <ClCompile Include="GameObjectBase.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerState.cpp" />
     <ClCompile Include="Scenery.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Utility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="patch notes.txt" />
+    <Text Include="readme.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

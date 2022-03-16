@@ -12,6 +12,7 @@ public:
     GameObject* m_parent;
 
     std::map<std::string, Animation> m_animations;
+    std::map<std::string, sf::Vector2f> m_offsets;
     std::string m_currentAnimation;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -22,12 +23,6 @@ public:
     void changeAnimation(std::string newAnimation)
     {
         m_currentAnimation = newAnimation;
-    }
-
-    void setPosition(sf::Vector2f newPosition)
-    {
-        int currentFrame = m_animations[m_currentAnimation].m_currentFrame;
-        m_animations[m_currentAnimation].m_animationFrames[currentFrame].setPosition(newPosition);
     }
 
     sf::Vector2f getScale()
@@ -41,13 +36,30 @@ public:
         m_animations[m_currentAnimation].m_animationFrames[currentFrame].setScale(newScale);
     }
 
-    void addAnimation(std::string name, Animation animation)
+    void addAnimation(std::string name, Animation animation, sf::Vector2f offset)
     {
-        m_animations.insert(std::pair<std::string, Animation>(name, animation));
+        m_animations.insert_or_assign(name, animation);
+        m_offsets.insert_or_assign(name, offset);
     }
 
     void update(float dt, sf::Vector2f position)
     {
-        m_animations[m_currentAnimation].update(dt, position);
+        m_animations[m_currentAnimation].update(dt, position + m_offsets[m_currentAnimation]);
+    }
+
+    //void setPosition(sf::Vector2f newPosition)
+    //{
+    //    int currentFrame = m_animations[m_currentAnimation].m_currentFrame;
+    //    m_animations[m_currentAnimation].m_animationFrames[currentFrame].setPosition(newPosition);
+    //}
+
+    void setPosition(sf::Vector2f newPosition)
+    {
+        m_animations[m_currentAnimation].setPosition(newPosition + m_offsets[m_currentAnimation]);
+    }
+
+    void reset()
+    {
+        m_animations[m_currentAnimation].reset();
     }
 };

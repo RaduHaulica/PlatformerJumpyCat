@@ -1,0 +1,22 @@
+0.1
+animation;
+finite state machine;
+game object classes;
+jumping across platforms works;
+
+0.2
+support for multiple inputs instead of single input value;
+extended level size + background;
+camera scrolling;
+minimap;
+
+0.3
+refactored a lot of code, expanded class hierarchy and moved functionality around;
+better (simpler) collision;
+nope, everything broke, got back to the old collision with feelers + tweaks;
+
+next:
+collision 'events';
+enemies;
+collectibles;
+message queue for achievements?

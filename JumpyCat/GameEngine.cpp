@@ -6,8 +6,12 @@ GameEngine::GameEngine() :
     m_keyPressedDown{ false },
     m_keyPressedLeft{ false },
     m_keyPressedRight{ false },
-    m_keyPressedUp{ false }
-{}
+    m_keyPressedUp{ false },
+    m_frameRate{ 60.0f },
+    m_frameTimeAccumulator{ 0.0f }
+{
+    m_frameTime = 1 / m_frameRate;
+}
 
 GameEngine::~GameEngine()
 {
@@ -17,37 +21,50 @@ GameEngine::~GameEngine()
         delete m_gameEntities[i];
     for (int i = 0; i < m_playerEntities.size(); i++)
         delete m_playerEntities[i];
+    for (int i = 0; i < m_enemyEntities.size(); i++)
+        delete m_enemyEntities[i];
+    for (int i = 0; i < m_collectibleEntities.size(); i++)
+        delete m_collectibleEntities[i];
+
 }
 
 void GameEngine::update(float dt)
 {
-    for (auto& player : m_playerEntities)
-        player->update(dt);
-    for (auto& entity : m_gameEntities)
-        entity->update(dt);
-
-    std::vector<std::pair<GameObject*, GameObject*>> collisionResults = checkCollisions();
-	for (auto& [playerEntity, gameEntity] : collisionResults)
-	{
-		dynamic_cast<Player*>(playerEntity)->collide(gameEntity);
-	}
-
-    // ===== CLEANUP =====
-    for (int i = 0; i < m_gameEntities.size(); i++)
+    m_frameTimeAccumulator += dt;
+    while (m_frameTimeAccumulator > m_frameTime)
     {
-        if (m_gameEntities[i]->m_terminated)
-        {
-            m_gameEntities.erase(m_gameEntities.begin() + i);
-            i--;
-        }
+        m_frameTimeAccumulator -= m_frameTime;
+
+		for (auto& player : m_playerEntities)
+			player->update(m_frameTime);
+        for (auto& entity : m_collectibleEntities)
+            entity->update(m_frameTime);
+        for (auto& enemy : m_enemyEntities)
+            enemy->update(m_frameTime);
+		for (auto& entity : m_gameEntities)
+			entity->update(m_frameTime);
+
+		// collisions
+		std::vector<std::pair<GameObjectBase*, GameObjectBase*>> collisionResults = checkCollisions();
+
+		// ===== CLEANUP =====
+		for (int i = 0; i < m_gameEntities.size(); i++)
+		{
+			if (m_gameEntities[i]->m_terminated)
+			{
+				m_gameEntities.erase(m_gameEntities.begin() + i);
+				i--;
+			}
+		}
     }
+
 }
 
 void GameEngine::handleInput(std::vector<Input> input)
 {
     for (auto& player : m_playerEntities)
         for (auto& command:input)
-        player->handleInput(command);
+            player->handleInput(command);
 }
 
 std::vector<Input> GameEngine::collectInput()
@@ -145,10 +162,11 @@ void GameEngine::draw(sf::RenderTarget& target, sf::RenderStates states) const
         player->draw(target, states);
 }
 
-std::vector<std::pair<GameObject*, GameObject*>> GameEngine::checkCollisions()
+std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollisions()
 {
-    std::vector<std::pair<GameObject*, GameObject*>> results;
+    std::vector<std::pair<GameObjectBase*, GameObjectBase*>> results;
 
+    // players hitting walls
     for (int i = 0; i < m_playerEntities.size(); i++)
     {
         for (int j = 0; j < m_gameEntities.size(); j++)
@@ -157,11 +175,48 @@ std::vector<std::pair<GameObject*, GameObject*>> GameEngine::checkCollisions()
             {
                 for (int l = 0; l < m_gameEntities[j]->m_colliderComponent.m_colliders.size(); l++)
                 {
-                    if (checkCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[k], m_gameEntities[j]->m_colliderComponent.m_colliders[l]))
+                    if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[k], m_gameEntities[j]->m_colliderComponent.m_colliders[l]))
                     {
-                        results.push_back({ m_playerEntities[i], m_gameEntities[j] });
+                        static_cast<Player*>(m_playerEntities[i])->collideWall(m_gameEntities[j]);
+                        m_gameEntities[j]->collide(m_playerEntities[i]);
                     }
                 }
+            }
+        }
+    }
+
+    // players getting collectibles
+    for (int i = 0; i < m_playerEntities.size(); i++)
+    {
+        for (int j = 0; j < m_collectibleEntities.size(); j++)
+        {
+            if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[0], m_collectibleEntities[j]->m_colliderComponent.m_colliders[0]))
+            {
+                results.push_back({m_playerEntities[i], m_collectibleEntities[j]});
+            }
+        }
+    }
+
+    // players pouncing on monsters
+    for (int i = 0; i < m_playerEntities.size(); i++)
+    {
+        for (int j = 0; j < m_collectibleEntities.size(); j++)
+        {
+            if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[0], m_enemyEntities[j]->m_colliderComponent.m_colliders[0]))
+            {
+                results.push_back({ m_playerEntities[i], m_collectibleEntities[j] });
+            }
+        }
+    }
+
+    // monsters running into walls
+    for (int i = 0; i < m_enemyEntities.size(); i++)
+    {
+        for (int j = 0; j < m_gameEntities.size(); j++)
+        {
+            if (checkRectangleCollision(m_enemyEntities[i]->m_colliderComponent.m_colliders[0], m_gameEntities[j]->m_colliderComponent.m_colliders[0]))
+            {
+                results.push_back({m_enemyEntities[i], m_gameEntities[j]});
             }
         }
     }

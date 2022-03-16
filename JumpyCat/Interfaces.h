@@ -1,6 +1,7 @@
 #pragma once
 
 class Input;
+class GameObjectBase;
 
 class IUpdatable
 {
@@ -12,4 +13,10 @@ class IControllable
 {
 public:
     virtual void handleInput(Input input) = 0;
+};
+
+class ICollidable
+{
+public:
+    virtual void collide(GameObjectBase* collidee) = 0;
 };

@@ -7,9 +7,9 @@
 
 #include "GameObjectBase.h"
 
-class IPlayerState;
+class IGameActorState;
 
-class Player : public GameObjectBase
+class GameActorBase : public GameObjectBase
 {
 public:
     static const float MAX_CHARGE_TIME;
@@ -29,7 +29,7 @@ public:
     bool m_touchingTop;
 
     std::string m_currentStateName;
-    IPlayerState* m_currentState;
+    IGameActorState* m_currentState;
 
     sf::CircleShape m_anchor;
     sf::VertexArray m_feelers;
@@ -50,7 +50,7 @@ public:
 
     // methods
 
-    Player(std::string name, sf::Vector2f size);
+    GameActorBase(std::string name, sf::Vector2f size);
 
     virtual void handleInput(Input input);
 

@@ -12,4 +12,4 @@ float distanceBetweenPoints(sf::Vector2f v1, sf::Vector2f v2);
 float dot(sf::Vector2f v1, sf::Vector2f v2);
 // angle in radians
 sf::Vector2f rotateVector(sf::Vector2f v, float angle);
-bool checkCollision(sf::RectangleShape r1, sf::RectangleShape r2);
+bool checkRectangleCollision(sf::RectangleShape r1, sf::RectangleShape r2);
