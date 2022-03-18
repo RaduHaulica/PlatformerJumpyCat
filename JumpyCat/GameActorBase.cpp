@@ -148,7 +148,7 @@ bool GameActorBase::isGrounded()
 
         // BUG FIX
         // changing platforms looks like a visual bug because it's a transition MOVING -> FALLING -> STANDING
-        std::vector<GameObjectBase*> walls = m_parentGameEngine->getWalls();
+        std::vector<GameObjectWall*> walls = m_parentGameEngine->getWalls();
         for (int i = 0; i < walls.size(); i++)
         {
             if (walls[i]->m_colliderComponent.m_colliders[0].getGlobalBounds().contains(bottomLeftFeeler) ||

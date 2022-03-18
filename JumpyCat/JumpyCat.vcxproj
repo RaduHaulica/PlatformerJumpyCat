@@ -27,6 +27,7 @@
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameObjectWall.h" />
     <ClInclude Include="GraphicsComponent.h" />
+    <ClInclude Include="HealthBar.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Interfaces.h" />
     <ClInclude Include="GameObjectBase.h" />

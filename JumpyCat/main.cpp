@@ -7,6 +7,7 @@
 #include "TextureManager.h"
 #include "Player.h"
 #include "GameObjectWall.h"
+#include "HealthBar.h"
 
 class GameObjectFactory
 {
@@ -28,6 +29,26 @@ class GameObjectFactory
     }
 };
 
+void loadHealthBarGraphics(TextureManager& tm, Player* player, HealthBar* healthBar)
+{
+    Animation heartAnimation(tm.getTexture("heart"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
+    Animation heartEmptyAnimation(tm.getTexture("heartEmpty"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
+
+    healthBar->setPosition({ 0, 0 });
+    healthBar->synchronize(player);
+
+    for (int i = 0; i < healthBar->m_maximumHealth; i++)
+    {
+		healthBar->m_graphicsComponents[i].addAnimation("empty", heartEmptyAnimation, {0, 0});
+        healthBar->m_graphicsComponents[i].m_currentAnimation = "empty";
+        healthBar->m_graphicsComponents[i].setPosition({ (float)i * 64, 0 });
+
+		healthBar->m_graphicsComponents[i].addAnimation("full", heartAnimation, {0, 0});
+        healthBar->m_graphicsComponents[i].m_currentAnimation = "full";
+        healthBar->m_graphicsComponents[i].setPosition({ (float)i * 64, 0 });
+    }
+}
+
 void loadPlayerGraphics(TextureManager& tm, Player* player)
 {
     float sizeX{ 100 }, sizeY{ 90 };
@@ -37,12 +58,16 @@ void loadPlayerGraphics(TextureManager& tm, Player* player)
     Animation movingAnimation(tm.getTexture("cat_moving"), 10, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, true);
     Animation duckingAnimation(tm.getTexture("cat_ducking"), 10, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, true);
     Animation fallingAnimation(tm.getTexture("cat_falling"), 8, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
+    Animation hurtingAnimation(tm.getTexture("cat_hurting"), 10, { texSizeX, texSizeY }, { sizeX, sizeY }, 0.5f, false);
+    Animation dyingAnimation(tm.getTexture("cat_dying"), 10, { texSizeX, texSizeY }, { sizeX, sizeY }, 0.5f, false);
 
     player->m_graphicsComponent.addAnimation("standing", standingAnimation, {-25, 0});
     player->m_graphicsComponent.addAnimation("jumping", jumpingAnimation, { -25, 0 });
     player->m_graphicsComponent.addAnimation("moving", movingAnimation, { -25, 0 });
     player->m_graphicsComponent.addAnimation("ducking", duckingAnimation, { -25, 0 });
     player->m_graphicsComponent.addAnimation("falling", fallingAnimation, { -25, 0 });
+    player->m_graphicsComponent.addAnimation("hurting", hurtingAnimation, { -25, 0 });
+    player->m_graphicsComponent.addAnimation("dying", dyingAnimation, { -25, 0 });
 
     player->initializeState();
 
@@ -57,14 +82,24 @@ void loadPlayerGraphics(TextureManager& tm, Player* player)
     player->initializeFeelers();
 }
 
-void loadReaperGraphics(TextureManager& tm, Player* reaper)
+void loadReaperGraphics(TextureManager& tm, GameActorBase* reaper)
 {
     float sizeX{ 100 }, sizeY{ 90 };
     float texSizeX{ 900 }, texSizeY{ 900 };
-    Animation walkingAnimation(tm.getTexture("reaper_walking"), 23, { texSizeX, texSizeY }, { sizeX, sizeY }, 2.0f, true);
+    Animation walkingAnimation(tm.getTexture("reaper_walking"), 23, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, true);
+    Animation standingAnimation(tm.getTexture("reaper_standing"), 17, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, true);
+    Animation jumpingAnimation(tm.getTexture("reaper_jumping"), 5, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
+    Animation fallingAnimation(tm.getTexture("reaper_falling"), 5, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
+    Animation hurtingAnimation(tm.getTexture("reaper_hurting"), 11, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
+    Animation dyingAnimation(tm.getTexture("reaper_dying"), 11, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
 
-    reaper->m_graphicsComponent.addAnimation("standing", walkingAnimation, { 0,0 });
-    reaper->m_graphicsComponent.m_currentAnimation = "standing";
+    reaper->m_graphicsComponent.addAnimation("walking", walkingAnimation, { -25, 0 });
+    reaper->m_graphicsComponent.addAnimation("standing", standingAnimation, { -25, 0 });
+    reaper->m_graphicsComponent.addAnimation("jumping", standingAnimation, { -25, 0 });
+    reaper->m_graphicsComponent.addAnimation("falling", fallingAnimation, { -25, 0 });
+    reaper->m_graphicsComponent.addAnimation("hurting", hurtingAnimation, { -25, 0 });
+    reaper->m_graphicsComponent.addAnimation("dying", dyingAnimation, { -25, 0 });
+
     reaper->initializeState();
 
     sf::RectangleShape collider1 = sf::RectangleShape();
@@ -73,7 +108,7 @@ void loadReaperGraphics(TextureManager& tm, Player* reaper)
     collider1.setOutlineThickness(1);
     collider1.setPosition(sf::Vector2f({ 400.0f, 250.0f }));
     collider1.setSize({ 50, 90 });
-    reaper->m_colliderComponent.addColliders({ collider1 }, { {30,0} });
+    reaper->m_colliderComponent.addColliders({ collider1 }, { {0,0} });
 
     reaper->initializeFeelers();
 }
@@ -93,7 +128,7 @@ void createTile(TextureManager& textureManager, GameEngine& engine, sf::Vector2f
     collider1.setSize({ 100, 100 });
     tile->m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
     tile->setPosition(position);
-    engine.addEntity(tile);
+    engine.addWallEntity(tile);
 }
 
 void createBackground(TextureManager& textureManager, GameEngine& engine, sf::Vector2f position)
@@ -192,14 +227,18 @@ int main()
     loadPlayerGraphics(textureManager, player);
     player->setPosition({ 400, 400 });
 
-    Player* reaper = new Player("Reaper", { 100, 100 });
+    HealthBar* healthBar = new HealthBar({0, 0});
+    loadHealthBarGraphics(textureManager, player, healthBar);
+
+    GameActorBase* reaper = new GameActorBase("Reaper", { 100, 100 });
     loadReaperGraphics(textureManager, reaper);
     reaper->setPosition({ 700, -300 });
 
     GameEngine engine;
     loadScenery(textureManager, engine);
     engine.addPlayer(player);
-    engine.addEntity(reaper);
+    engine.addEnemyEntity(reaper);
+    engine.addPlayerHealthBar(healthBar);
 
     // extended background for main view
     sf::RectangleShape bck;
@@ -244,6 +283,8 @@ int main()
 
     float dt;
     sf::Clock frameClock;
+    bool paused{ false };
+    float pauseAccumulator{0.0f};
 
     while (window.isOpen())
     {
@@ -259,8 +300,31 @@ int main()
             //config.debug = !config.debug;
         }
 
+        if (engine.gameOver())
+            window.close();
+
         dt = frameClock.restart().asSeconds();
         
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2))
+        {
+            if (pauseAccumulator > 0.0f)
+                pauseAccumulator -= dt;
+            else
+            {
+				paused = true;
+				pauseAccumulator = 0.0f;
+				while (paused)
+				{
+					if (pauseAccumulator < 0.2f)
+						pauseAccumulator += frameClock.restart().asSeconds();
+					else
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2))
+							paused = false;
+				}
+				frameClock.restart();
+            }
+        }
+
         // ===== INPUT =====
         // in engine update
         std::vector<Input> input = engine.collectInput();
@@ -269,7 +333,7 @@ int main()
         // ===== UPDATE =====
         engine.update(dt);
 
-        //mainView.setCenter(engine.getPlayerPosition());
+        // move camera
         window.setView(mainView);
         sf::Vector2f playerPosition = engine.getPlayerPosition();
         playerPosition = (sf::Vector2f)window.mapCoordsToPixel(playerPosition, mainView);
@@ -277,13 +341,26 @@ int main()
         float width = 1920.0f;
         float height = 1080.0f;
         if (playerPosition.x < width / 3)
-            mainView.move(sf::Vector2f({ -width / 20, 0 }) * dt * 10.0f);
+            mainView.move(sf::Vector2f({ -width / 20, 0 }) * dt * 2.0f);
+        if (playerPosition.x < width / 6)
+            mainView.move(sf::Vector2f({ -width / 20, 0 }) * dt * 15.0f);
+
         if (playerPosition.x > 2 * width / 3)
-            mainView.move(sf::Vector2f({ width / 20, 0 }) * dt * 10.0f);
+            mainView.move(sf::Vector2f({ width / 20, 0 }) * dt * 2.0f);
+        if (playerPosition.x > 5 * width / 6)
+            mainView.move(sf::Vector2f({ width / 20, 0 }) * dt * 15.0f);
+
         if (playerPosition.y < height / 3)
-            mainView.move(sf::Vector2f({ 0,-height/20 }) * dt * 10.0f);
+            mainView.move(sf::Vector2f({ 0,-height/20 }) * dt * 2.0f);
+        if (playerPosition.y < height / 6)
+            mainView.move(sf::Vector2f({ 0,-height / 20 }) * dt * 15.0f);
+
         if (playerPosition.y > 2 * height / 3 - 100)
-            mainView.move(sf::Vector2f({ 0,height/20 }) * dt * 10.0f);
+            mainView.move(sf::Vector2f({ 0,height/20 }) * dt * 2.0f);
+        if (playerPosition.y > 5 * height / 6 - 100)
+            mainView.move(sf::Vector2f({ 0,height / 20 }) * dt * 15.0f);
+
+        healthBar->setPosition(mainView.getCenter() - mainView.getSize() / 2.0f);
 
         // ===== DRAW =====
         window.clear();

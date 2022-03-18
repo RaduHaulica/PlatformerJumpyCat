@@ -5,7 +5,7 @@
 int GameObjectBase::IDBase{ 0 };
 
 GameObjectBase::GameObjectBase() :
-    m_terminated{ false },
+    m_dead{ false },
     m_position{ sf::Vector2f(0, 0) }
 {
     m_id = GameObjectBase::IDBase++;

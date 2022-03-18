@@ -6,9 +6,12 @@
 
 #include "Interfaces.h"
 #include "GameObjectBase.h"
+#include "GameObjectWall.h"
+#include "GameActorBase.h"
 #include "Player.h"
 #include "Input.h"
 #include "Scenery.h"
+#include "HealthBar.h"
 
 class GameEngine : public IUpdatable, public sf::Drawable
 {
@@ -35,16 +38,21 @@ public:
     {
         return m_playerEntities[0]->m_colliderComponent.m_colliders[0].getPosition();
     }
-    void addEntity(GameObjectBase* newEntity)
+    void addWallEntity(GameObjectWall* newEntity)
     {
-        m_gameEntities.push_back(newEntity);
+        m_gameWallEntities.push_back(newEntity);
         newEntity->m_parentGameEngine = this;
     }
-    std::vector<GameObjectBase*> getWalls()
+    void addEnemyEntity(GameActorBase* newEnemy)
     {
-        return m_gameEntities;
+        m_enemyEntities.push_back(newEnemy);
+        newEnemy->m_parentGameEngine = this;
     }
-    void addEnemy(Player* newEnemy)
+    std::vector<GameObjectWall*> getWalls()
+    {
+        return m_gameWallEntities;
+    }
+    void addEnemy(GameActorBase* newEnemy)
     {
         m_enemyEntities.push_back(newEnemy);
         newEnemy->m_parentGameEngine = this;
@@ -53,19 +61,31 @@ public:
     {
         m_sceneryEntities.push_back(newScenery);
     }
+    void addPlayerHealthBar(HealthBar* hpBar)
+    {
+        m_playerHealthBar = hpBar;
+    }
+    bool gameOver()
+    {
+        return m_gameEnded;
+    }
 
 private:
     float m_frameRate;
     float m_frameTime;
     float m_frameTimeAccumulator;
 
+    bool m_gameEnded;
+
     bool m_keyPressedDown;
     bool m_keyPressedUp;
     bool m_keyPressedLeft;
     bool m_keyPressedRight;
-    std::vector<GameObjectBase*> m_gameEntities;
+
+    std::vector<GameObjectWall*> m_gameWallEntities;
     std::vector<GameObjectBase*> m_collectibleEntities;
-    std::vector<GameObjectBase*> m_enemyEntities;
-    std::vector<GameObjectBase*> m_playerEntities;
+    std::vector<GameActorBase*> m_enemyEntities;
+    std::vector<Player*> m_playerEntities;
     std::vector<Scenery*> m_sceneryEntities;
+    HealthBar* m_playerHealthBar;
 };

@@ -8,6 +8,7 @@ class TextureManager
 {
 public:
     TextureManager();
+    ~TextureManager();
     std::map<std::string, sf::Texture*> m_textures;
 
     void initialize();

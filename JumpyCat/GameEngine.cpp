@@ -8,7 +8,8 @@ GameEngine::GameEngine() :
     m_keyPressedRight{ false },
     m_keyPressedUp{ false },
     m_frameRate{ 60.0f },
-    m_frameTimeAccumulator{ 0.0f }
+    m_frameTimeAccumulator{ 0.0f },
+    m_gameEnded{ false }
 {
     m_frameTime = 1 / m_frameRate;
 }
@@ -17,8 +18,8 @@ GameEngine::~GameEngine()
 {
     for (int i = 0; i < m_sceneryEntities.size(); i++)
         delete m_sceneryEntities[i];
-    for (int i = 0; i < m_gameEntities.size(); i++)
-        delete m_gameEntities[i];
+    for (int i = 0; i < m_gameWallEntities.size(); i++)
+        delete m_gameWallEntities[i];
     for (int i = 0; i < m_playerEntities.size(); i++)
         delete m_playerEntities[i];
     for (int i = 0; i < m_enemyEntities.size(); i++)
@@ -41,21 +42,29 @@ void GameEngine::update(float dt)
             entity->update(m_frameTime);
         for (auto& enemy : m_enemyEntities)
             enemy->update(m_frameTime);
-		for (auto& entity : m_gameEntities)
+		for (auto& entity : m_gameWallEntities)
 			entity->update(m_frameTime);
 
 		// collisions
-		std::vector<std::pair<GameObjectBase*, GameObjectBase*>> collisionResults = checkCollisions();
+		checkCollisions();
 
 		// ===== CLEANUP =====
-		for (int i = 0; i < m_gameEntities.size(); i++)
+		for (int i = 0; i < m_gameWallEntities.size(); i++)
 		{
-			if (m_gameEntities[i]->m_terminated)
+			if (m_gameWallEntities[i]->m_dead)
 			{
-				m_gameEntities.erase(m_gameEntities.begin() + i);
+				m_gameWallEntities.erase(m_gameWallEntities.begin() + i);
 				i--;
 			}
 		}
+
+        m_playerHealthBar->update(m_frameTime);
+
+        for (int i = 0; i < m_playerEntities.size(); i++)
+        {
+            if (m_playerEntities[i]->m_dead)
+                m_gameEnded = true;
+        }
     }
 
 }
@@ -156,10 +165,15 @@ void GameEngine::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     for (auto& scenery : m_sceneryEntities)
         scenery->draw(target, states);
-    for (auto& entity : m_gameEntities)
+    for (auto& entity : m_gameWallEntities)
+        entity->draw(target, states);
+    for (auto& entity : m_collectibleEntities)
+        entity->draw(target, states);
+    for (auto& entity : m_enemyEntities)
         entity->draw(target, states);
     for (auto& player : m_playerEntities)
         player->draw(target, states);
+    m_playerHealthBar->draw(target, states);
 }
 
 std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollisions()
@@ -169,16 +183,16 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
     // players hitting walls
     for (int i = 0; i < m_playerEntities.size(); i++)
     {
-        for (int j = 0; j < m_gameEntities.size(); j++)
+        for (int j = 0; j < m_gameWallEntities.size(); j++)
         {
             for (int k = 0; k < m_playerEntities[i]->m_colliderComponent.m_colliders.size(); k++)
             {
-                for (int l = 0; l < m_gameEntities[j]->m_colliderComponent.m_colliders.size(); l++)
+                for (int l = 0; l < m_gameWallEntities[j]->m_colliderComponent.m_colliders.size(); l++)
                 {
-                    if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[k], m_gameEntities[j]->m_colliderComponent.m_colliders[l]))
+                    if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[k], m_gameWallEntities[j]->m_colliderComponent.m_colliders[l]))
                     {
-                        static_cast<Player*>(m_playerEntities[i])->collideWall(m_gameEntities[j]);
-                        m_gameEntities[j]->collide(m_playerEntities[i]);
+                        static_cast<Player*>(m_playerEntities[i])->collideWall(m_gameWallEntities[j]);
+                        m_gameWallEntities[j]->collide(m_playerEntities[i]);
                     }
                 }
             }
@@ -200,11 +214,13 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
     // players pouncing on monsters
     for (int i = 0; i < m_playerEntities.size(); i++)
     {
-        for (int j = 0; j < m_collectibleEntities.size(); j++)
+        for (int j = 0; j < m_enemyEntities.size(); j++)
         {
             if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[0], m_enemyEntities[j]->m_colliderComponent.m_colliders[0]))
             {
-                results.push_back({ m_playerEntities[i], m_collectibleEntities[j] });
+                results.push_back({ m_playerEntities[i], m_enemyEntities[j] });
+                m_playerEntities[i]->collideEnemy(m_enemyEntities[j]);
+                m_enemyEntities[j]->collide(m_playerEntities[i]);
             }
         }
     }
@@ -212,11 +228,11 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
     // monsters running into walls
     for (int i = 0; i < m_enemyEntities.size(); i++)
     {
-        for (int j = 0; j < m_gameEntities.size(); j++)
+        for (int j = 0; j < m_gameWallEntities.size(); j++)
         {
-            if (checkRectangleCollision(m_enemyEntities[i]->m_colliderComponent.m_colliders[0], m_gameEntities[j]->m_colliderComponent.m_colliders[0]))
+            if (checkRectangleCollision(m_enemyEntities[i]->m_colliderComponent.m_colliders[0], m_gameWallEntities[j]->m_colliderComponent.m_colliders[0]))
             {
-                results.push_back({m_enemyEntities[i], m_gameEntities[j]});
+                results.push_back({m_enemyEntities[i], m_gameWallEntities[j]});
             }
         }
     }

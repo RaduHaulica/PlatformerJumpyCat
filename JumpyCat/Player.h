@@ -13,12 +13,16 @@ class Player : public GameObjectBase
 {
 public:
     static const float MAX_CHARGE_TIME;
+
     std::string m_name;
     sf::Vector2f m_size;
     sf::Vector2f m_positionOffset;
     sf::Vector2f m_velocity;
     sf::Vector2f m_acceleration;
     float m_jumpHeightFactor;
+
+    int m_currentHealth;
+    int m_maximumHealth;
 
     bool m_facingRight;
     bool m_collided;
@@ -59,6 +63,7 @@ public:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     virtual void collideWall(GameObjectBase* collidedObject);
+    void collideEnemy(GameObjectBase* collidedObject);
 
     void explode()
     {
@@ -83,4 +88,6 @@ public:
     void initializeState();
     bool isGrounded();
     void setPosition(sf::Vector2f position);
+
+    void onEntry(GameObjectBase* collidedObject);
 };

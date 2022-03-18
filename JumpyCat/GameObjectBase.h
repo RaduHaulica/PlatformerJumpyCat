@@ -18,7 +18,7 @@ public:
     GameEngine* m_parentGameEngine;
     GraphicsComponent m_graphicsComponent;
     ColliderComponent m_colliderComponent;
-    bool m_terminated;
+    bool m_dead;
     sf::Vector2f m_position;
 
     std::vector<GameObjectBase*> m_collidedWith;

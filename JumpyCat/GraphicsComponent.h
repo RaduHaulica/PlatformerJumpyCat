@@ -55,7 +55,14 @@ public:
 
     void setPosition(sf::Vector2f newPosition)
     {
-        m_animations[m_currentAnimation].setPosition(newPosition + m_offsets[m_currentAnimation]);
+		//m_animations[m_currentAnimation].setPosition(newPosition + m_offsets[m_currentAnimation]);
+
+        std::map<std::string, Animation>::iterator iter;
+        for (iter = m_animations.begin(); iter != m_animations.end(); iter++)
+        {
+            iter->second.setPosition(newPosition + m_offsets[iter->first]);
+        }
+
     }
 
     void reset()

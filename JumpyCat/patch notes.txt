@@ -15,8 +15,13 @@ refactored a lot of code, expanded class hierarchy and moved functionality aroun
 better (simpler) collision;
 nope, everything broke, got back to the old collision with feelers + tweaks;
 
-next:
+current:
+animations for player and enemy;
+pause;
+health bar + interactions with enemy;
 collision 'events';
+
+next:
 enemies;
 collectibles;
 message queue for achievements?

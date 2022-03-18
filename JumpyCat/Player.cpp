@@ -19,7 +19,9 @@ Player::Player(std::string name, sf::Vector2f size) :
     m_velocity{ sf::Vector2f({ 0.0f, 0.0f }) },
     m_positionOffset{ sf::Vector2f({ 0.0f, 0.0f }) },
     m_jumpHeightFactor{ 3.0f },
-    m_platform { nullptr }
+    m_platform { nullptr },
+    m_currentHealth{ 3 },
+    m_maximumHealth{ 3 }
 {
     m_feelers.setPrimitiveType(sf::PrimitiveType::Points);
     //m_graphicsComponent.m_currentAnimation = "standing";
@@ -38,7 +40,6 @@ void Player::update(float dt)
 
     setPosition(m_position);
     GameObjectBase::update(dt);
-    //std::cout << "Player collisions: " << m_collidedWith.size() << "\n";
 
     auto [x, y] = m_graphicsComponent.getScale();
     if ((m_facingRight && x < 0) || (!m_facingRight && x > 0))
@@ -56,6 +57,9 @@ void Player::update(float dt)
     m_touchingTop = false;
 
     initializeFeelers();
+
+    if (m_currentHealth <= 0)
+        m_dead = true;
 }
 
 void Player::handleInput(Input input)
@@ -70,7 +74,7 @@ void Player::handleInput(Input input)
 
 		m_currentState->onEntry(*this);
     }
-
+     
 }
 
 void Player::initializeFeelers()
@@ -148,7 +152,7 @@ bool Player::isGrounded()
 
         // BUG FIX
 		// changing platforms looks like a visual bug because it's a transition MOVING -> FALLING -> STANDING
-		std::vector<GameObjectBase*> walls = m_parentGameEngine->getWalls();
+        std::vector<GameObjectWall*> walls = m_parentGameEngine->getWalls();
 		for (int i = 0; i < walls.size(); i++)
 		{
 			if (walls[i]->m_colliderComponent.m_colliders[0].getGlobalBounds().contains(bottomLeftFeeler) ||
@@ -183,75 +187,59 @@ void Player::collideWall(GameObjectBase* collidedObject)
 
     initializeFeelers();
 
-    // start
-    sf::RectangleShape r1 = collidedObject->m_colliderComponent.m_colliders[0];
-    sf::RectangleShape r2 = m_colliderComponent.m_colliders[0];
-    sf::Vector2f position = r2.getPosition();
+    // experimentally moved to GameObjectWall collide function
+    //// start
+    //sf::RectangleShape r1 = collidedObject->m_colliderComponent.m_colliders[0];
+    //sf::RectangleShape r2 = m_colliderComponent.m_colliders[0];
+    //sf::Vector2f position = r2.getPosition();
 
-    float thresholdX = r1.getSize().x/10;
-    float thresholdY = r1.getSize().y/10;
+    //float thresholdX = r1.getSize().x/10;
+    //float thresholdY = r1.getSize().y/10;
 
-    if (std::fabs(r1.getPosition().x - r2.getPosition().x - r2.getSize().x) < thresholdX)
-    {
-        //std::cout << "LEFT -> RIGHT\n";
-        position.x = r1.getPosition().x - r2.getSize().x - 1;
-    }
-    else if (std::fabs(r1.getPosition().x + r1.getSize().x - r2.getPosition().x) < thresholdX)
-    {
-        //std::cout << "RIGHT -> LEFT\n";
-        position.x = r1.getPosition().x + r1.getSize().x + 1;
-    }
-    else if (std::fabs(r1.getPosition().y - r2.getPosition().y - r2.getSize().y) < thresholdY)
-    {
-        //std::cout << "TOP\n\\/\nBOTTOM\n";
-        position.y = r1.getPosition().y - r2.getSize().y - 1;
-        m_grounded = true;
-        m_platform = collidedObject;
-    }
-    else if (std::fabs(r1.getPosition().y + r1.getSize().y - r2.getPosition().y) < thresholdY)
-    {
-        /*std::cout << "BOTTOM\n^\nTOP\n";*/
-        position.y = r1.getPosition().y + r1.getSize().y + 1;
-        m_touchingTop = true;
-    }
-
-    setPosition(position);
-    // end
-
-    //for (int i = 0; i < collidedObject->m_colliderComponent.m_colliders.size(); i++)
+    //if (std::fabs(r1.getPosition().x - r2.getPosition().x - r2.getSize().x) < thresholdX)
     //{
-    //    if (collidedObject->m_colliderComponent.m_colliders[i].getGlobalBounds().contains(bottomLeftFeeler)
-    //        || collidedObject->m_colliderComponent.m_colliders[i].getGlobalBounds().contains(bottomRightFeeler))
-    //    {
-    //        m_grounded = true;
-    //        //m_position.y = collidedObject->m_colliderComponent.m_colliders[0].getPosition().y - collider.getSize().y;
-    //        m_platform = collidedObject;
-    //        m_velocity.y = 0.0f;
-    //    }
-
-    //    if (collidedObject->m_colliderComponent.m_colliders[i].getGlobalBounds().contains(leftTopFeeler)
-    //        || collidedObject->m_colliderComponent.m_colliders[i].getGlobalBounds().contains(leftBottomFeeler))
-    //    {
-    //        m_touchingLeft = true;
-    //        //m_position.x = collidedObject->m_colliderComponent.m_colliders[0].getPosition().x + collidedObject->m_colliderComponent.m_colliders[0].getSize().x;
-    //        m_velocity.x = 0.0f;
-    //    }
-
-    //    if (collidedObject->m_colliderComponent.m_colliders[i].getGlobalBounds().contains(rightTopFeeler)
-    //        || collidedObject->m_colliderComponent.m_colliders[i].getGlobalBounds().contains(rightBottomFeeler))
-    //    {
-    //        m_touchingRight = true;
-    //        //m_position.x = collidedObject->m_colliderComponent.m_colliders[0].getPosition().x - collider.getSize().x;
-    //        m_velocity.x = 0.0f;
-    //    }
-
-    //    if (collidedObject->m_colliderComponent.m_colliders[i].getGlobalBounds().contains(topLeftFeeler)
-    //        || collidedObject->m_colliderComponent.m_colliders[i].getGlobalBounds().contains(topRightFeeler))
-    //    {
-    //        m_touchingTop = true;
-    //        //m_position.y = collidedObject->m_colliderComponent.m_colliders[i].getPosition().y + collidedObject->m_colliderComponent.m_colliders[i].getSize().y;
-    //        m_velocity.y = 0.0f;
-    //    }
-
+    //    //std::cout << "LEFT -> RIGHT\n";
+    //    position.x = r1.getPosition().x - r2.getSize().x - 1;
     //}
+    //else if (std::fabs(r1.getPosition().x + r1.getSize().x - r2.getPosition().x) < thresholdX)
+    //{
+    //    //std::cout << "RIGHT -> LEFT\n";
+    //    position.x = r1.getPosition().x + r1.getSize().x + 1;
+    //}
+    //else if (std::fabs(r1.getPosition().y - r2.getPosition().y - r2.getSize().y) < thresholdY)
+    //{
+    //    //std::cout << "TOP\n\\/\nBOTTOM\n";
+    //    position.y = r1.getPosition().y - r2.getSize().y - 1;
+    //    m_grounded = true;
+    //    m_platform = collidedObject;
+    //}
+    //else if (std::fabs(r1.getPosition().y + r1.getSize().y - r2.getPosition().y) < thresholdY)
+    //{
+    //    /*std::cout << "BOTTOM\n^\nTOP\n";*/
+    //    position.y = r1.getPosition().y + r1.getSize().y + 1;
+    //    m_touchingTop = true;
+    //}
+
+    //setPosition(position);
+    //// end
+}
+
+void Player::collideEnemy(GameObjectBase* collidedObject)
+{
+    //GameObjectBase::collide(collidedObject);
+    bool found = false;
+    for (int i = 0; i < m_collidedWith.size(); i++)
+        if (m_collidedWith[i] == collidedObject)
+            found = true;
+    if (!found)
+    {
+        m_collidedWith.push_back(collidedObject);
+        m_colliderComponent.onEntry(collidedObject);
+        onEntry(collidedObject);
+    }
+}
+
+void Player::onEntry(GameObjectBase* collidedObject)
+{
+    m_currentHealth -= 1;
 }
