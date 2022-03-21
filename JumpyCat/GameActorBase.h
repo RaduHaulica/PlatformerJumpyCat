@@ -12,7 +12,6 @@ class IGameActorState;
 class GameActorBase : public GameObjectBase
 {
 public:
-    static const float MAX_CHARGE_TIME;
     std::string m_name;
     sf::Vector2f m_size;
     sf::Vector2f m_positionOffset;

@@ -32,5 +32,6 @@ public:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     virtual void update(float dt);
     virtual void handleInput(Input input);
+    void kill();
 
 };

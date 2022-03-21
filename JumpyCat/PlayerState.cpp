@@ -5,18 +5,11 @@
 
 // ===== ===== ===== ===== DUCKING STATE ===== ===== ===== =====
 
-PlayerDuckingState::PlayerDuckingState() :
-    m_chargeTime{ 0 }
+PlayerDuckingState::PlayerDuckingState()
 {}
 
 void PlayerDuckingState::update(Player& player, float dt)
-{
-    m_chargeTime += dt;
-    if (m_chargeTime > Player::MAX_CHARGE_TIME)
-    {
-        player.explode();
-    }
-}
+{}
 
 IPlayerState* PlayerDuckingState::handleInput(Player& player, Input input)
 {

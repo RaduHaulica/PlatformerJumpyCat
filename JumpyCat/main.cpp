@@ -11,6 +11,7 @@
 
 class GameObjectFactory
 {
+public:
     TextureManager& m_tm;
     GameEngine& m_engine;
     GameObjectBase* m_prototype;
@@ -24,13 +25,40 @@ class GameObjectFactory
     GameObjectBase* createObject(sf::Vector2f position)
     {
         GameObjectBase* newObj = m_prototype->clone(position);
-        newObj->setPosition(position);
+        //newObj->setPosition(position);
         return newObj;
     }
 };
 
+void loadCoinGraphics(TextureManager& tm, GameObjectBase* coin)
+{
+    Animation coinAnimation(tm.getTexture("coin"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
+    coin->m_graphicsComponent.addAnimation("standing", coinAnimation, { 0, 0 });
+    coin->m_graphicsComponent.m_currentAnimation = "standing";
+
+    sf::RectangleShape collider1 = sf::RectangleShape();
+    collider1.setFillColor(sf::Color::Transparent);
+    collider1.setOutlineColor(sf::Color::Red);
+    collider1.setOutlineThickness(1);
+    collider1.setPosition({ 0,0 });
+    collider1.setSize({ 64, 64 });
+    coin->m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
+}
+
+void createCoin(TextureManager& tm, GameEngine& engine, sf::Vector2f position)
+{
+    GameObjectPowerup* coin = new GameObjectPowerup;
+    loadCoinGraphics(tm, coin);
+    coin->setPosition(position);
+    engine.addCollectible(coin);
+}
+
 void loadHealthBarGraphics(TextureManager& tm, Player* player, HealthBar* healthBar)
 {
+    Animation coinAnimation(tm.getTexture("coin"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
+    healthBar->m_graphicsComponent.addAnimation("standing", coinAnimation, { 0, 0 });
+    healthBar->m_graphicsComponent.m_currentAnimation = "standing";
+
     Animation heartAnimation(tm.getTexture("heart"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
     Animation heartEmptyAnimation(tm.getTexture("heartEmpty"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
 
@@ -234,11 +262,23 @@ int main()
     loadReaperGraphics(textureManager, reaper);
     reaper->setPosition({ 700, -300 });
 
+
     GameEngine engine;
     loadScenery(textureManager, engine);
     engine.addPlayer(player);
-    engine.addEnemyEntity(reaper);
+    engine.addEnemy(reaper);
     engine.addPlayerHealthBar(healthBar);
+
+    // COINS
+    //GameObjectPowerup* coin = new GameObjectPowerup;
+    //loadCoinGraphics(textureManager, coin);
+    //GameObjectFactory coinFactory(textureManager, engine, coin);
+    //engine.addCollectible(coinFactory.createObject({ 400, 300 }));
+    //engine.addCollectible(coinFactory.createObject({ 200, 200 }));
+
+    createCoin(textureManager, engine, { 200, 200 });
+    createCoin(textureManager, engine, { 400, 200 });
+
 
     // extended background for main view
     sf::RectangleShape bck;
@@ -360,7 +400,7 @@ int main()
         if (playerPosition.y > 5 * height / 6 - 100)
             mainView.move(sf::Vector2f({ 0,height / 20 }) * dt * 15.0f);
 
-        healthBar->setPosition(mainView.getCenter() - mainView.getSize() / 2.0f);
+        healthBar->setPosition(mainView.getCenter() - mainView.getSize() / 2.2f);
 
         // ===== DRAW =====
         window.clear();

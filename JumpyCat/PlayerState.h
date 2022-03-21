@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Input.h"
+#include "GameActorState.h"
 
 class Player;
 class Input;
 class GameEngine;
 
-class IPlayerState
+class IPlayerState: public IGameActorState
 {
 public:
     virtual IPlayerState* handleInput(Player& player, Input input) { return nullptr; };

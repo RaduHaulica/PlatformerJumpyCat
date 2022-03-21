@@ -7,6 +7,7 @@
 #include "Interfaces.h"
 #include "GameObjectBase.h"
 #include "GameObjectWall.h"
+#include "GameObjectPowerup.h"
 #include "GameActorBase.h"
 #include "Player.h"
 #include "Input.h"
@@ -43,11 +44,6 @@ public:
         m_gameWallEntities.push_back(newEntity);
         newEntity->m_parentGameEngine = this;
     }
-    void addEnemyEntity(GameActorBase* newEnemy)
-    {
-        m_enemyEntities.push_back(newEnemy);
-        newEnemy->m_parentGameEngine = this;
-    }
     std::vector<GameObjectWall*> getWalls()
     {
         return m_gameWallEntities;
@@ -56,6 +52,10 @@ public:
     {
         m_enemyEntities.push_back(newEnemy);
         newEnemy->m_parentGameEngine = this;
+    }
+    void addCollectible(GameObjectPowerup* newCollectible)
+    {
+        m_collectibleEntities.push_back(newCollectible);
     }
     void addScenery(Scenery* newScenery)
     {
@@ -83,7 +83,7 @@ private:
     bool m_keyPressedRight;
 
     std::vector<GameObjectWall*> m_gameWallEntities;
-    std::vector<GameObjectBase*> m_collectibleEntities;
+    std::vector<GameObjectPowerup*> m_collectibleEntities;
     std::vector<GameActorBase*> m_enemyEntities;
     std::vector<Player*> m_playerEntities;
     std::vector<Scenery*> m_sceneryEntities;

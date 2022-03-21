@@ -4,8 +4,6 @@
 #include "GameActorState.h"
 #include "GameEngine.h"
 
-const float GameActorBase::MAX_CHARGE_TIME = 2.0f;
-
 GameActorBase::GameActorBase(std::string name, sf::Vector2f size) :
     m_name{ name },
     m_size{ size },
@@ -31,6 +29,9 @@ GameActorBase::GameActorBase(std::string name, sf::Vector2f size) :
 
 void GameActorBase::update(float dt)
 {
+    Input mockInput;
+    mockInput.control = CONTROLS::NOTHING;
+    handleInput(mockInput);
     m_currentState->update(*this, dt);
 
     m_velocity += (m_acceleration * dt);

@@ -71,6 +71,11 @@ void GameObjectBase::update(float dt)
 	}
 }
 
+void GameObjectBase::kill()
+{
+	m_dead = true;
+}
+
 void GameObjectBase::handleInput(Input input)
 {
 

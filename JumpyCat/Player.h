@@ -12,8 +12,6 @@ class IPlayerState;
 class Player : public GameObjectBase
 {
 public:
-    static const float MAX_CHARGE_TIME;
-
     std::string m_name;
     sf::Vector2f m_size;
     sf::Vector2f m_positionOffset;
@@ -23,6 +21,7 @@ public:
 
     int m_currentHealth;
     int m_maximumHealth;
+    int m_coinsCollected;
 
     bool m_facingRight;
     bool m_collided;
@@ -64,6 +63,7 @@ public:
 
     virtual void collideWall(GameObjectBase* collidedObject);
     void collideEnemy(GameObjectBase* collidedObject);
+    void collideCollectible(GameObjectBase* collidedObject);
 
     void explode()
     {

@@ -46,6 +46,10 @@ void TextureManager::initialize()
     heartEmptyTex->loadFromFile(basePath + "heart_empty.png");
     m_textures.insert(std::pair<std::string, sf::Texture*>("heartEmpty", heartEmptyTex));
 
+    sf::Texture* coinTex = new sf::Texture();
+    coinTex->loadFromFile(basePath + "coin.png");
+    m_textures.insert(std::pair<std::string, sf::Texture*>("coin", coinTex));
+
     // player - cat
 
     sf::Texture* catStandingTex = new sf::Texture();
