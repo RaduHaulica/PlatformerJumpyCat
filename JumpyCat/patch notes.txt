@@ -23,12 +23,18 @@ pause;
 health bar + interactions with enemy;
 collision 'events';
 
-0.6 - latest
+0.6 - latest release
 game object factory - postponed;
 collectible + score;
-starting enemy + state;
+sound library manager + audio manager (message queue, singleton);
 
+0.7 - current WIP
+starting enemy + state;
+starting observer for achievements?
 
 next:
-enemies;
-message queue for achievements?
+fix sound leak? make actual singleton;
+enemy movement;
+player damage state (movement, animation);
+enemy damage state (movement, animation);
+half jumping state? would work with enemy boop;

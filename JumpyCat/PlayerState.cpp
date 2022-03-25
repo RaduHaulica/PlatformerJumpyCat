@@ -2,6 +2,7 @@
 
 #include "Input.h"
 #include "Player.h"
+#include "Utility.h"
 
 // ===== ===== ===== ===== DUCKING STATE ===== ===== ===== =====
 
@@ -230,6 +231,10 @@ void PlayerJumpingState::onEntry(Player& player)
     player.m_graphicsComponent.reset();
     player.setPosition(player.m_position);
     player.m_currentStateName = "jumping";
+
+    SoundId jumpSound;
+    jumpSound.m_name = "cat_jumping";
+    AudioManager::playSound(jumpSound);
 }
 void PlayerJumpingState::onExit(Player& player)
 {

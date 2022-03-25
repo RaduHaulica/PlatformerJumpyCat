@@ -2,6 +2,7 @@
 
 #include "Input.h"
 #include "GameActorState.h"
+#include "AudioManager.h"
 
 class Player;
 class Input;

@@ -5,7 +5,11 @@
 #include <iostream>
 #include <string>
 
+#include "Input.h"
 #include "GameObjectBase.h"
+#include "PlayerState.h"
+
+class GameEngine;
 
 class IPlayerState;
 
@@ -64,11 +68,6 @@ public:
     virtual void collideWall(GameObjectBase* collidedObject);
     void collideEnemy(GameObjectBase* collidedObject);
     void collideCollectible(GameObjectBase* collidedObject);
-
-    void explode()
-    {
-        // PEW PEW!
-    }
 
     void setMessage(std::string newMessage)
     {

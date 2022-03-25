@@ -4,71 +4,38 @@
 
 #include <vector>
 
+#include "Input.h"
 #include "Interfaces.h"
 #include "GameObjectBase.h"
 #include "GameObjectWall.h"
 #include "GameObjectPowerup.h"
+#include "Scenery.h"
 #include "GameActorBase.h"
 #include "Player.h"
-#include "Input.h"
-#include "Scenery.h"
 #include "HealthBar.h"
 
 class GameEngine : public IUpdatable, public sf::Drawable
 {
 public:
     GameEngine();
-
     ~GameEngine();
 
     virtual void update(float dt);
-
     virtual void handleInput(std::vector<Input> input);
-
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     std::vector<std::pair<GameObjectBase*, GameObjectBase*>> checkCollisions();
 
     std::vector<Input> collectInput();
-    void addPlayer(Player* newPlayer)
-    {
-        m_playerEntities.push_back(newPlayer);
-        newPlayer->m_parentGameEngine = this;
-    }
-    sf::Vector2f getPlayerPosition()
-    {
-        return m_playerEntities[0]->m_colliderComponent.m_colliders[0].getPosition();
-    }
-    void addWallEntity(GameObjectWall* newEntity)
-    {
-        m_gameWallEntities.push_back(newEntity);
-        newEntity->m_parentGameEngine = this;
-    }
-    std::vector<GameObjectWall*> getWalls()
-    {
-        return m_gameWallEntities;
-    }
-    void addEnemy(GameActorBase* newEnemy)
-    {
-        m_enemyEntities.push_back(newEnemy);
-        newEnemy->m_parentGameEngine = this;
-    }
-    void addCollectible(GameObjectPowerup* newCollectible)
-    {
-        m_collectibleEntities.push_back(newCollectible);
-    }
-    void addScenery(Scenery* newScenery)
-    {
-        m_sceneryEntities.push_back(newScenery);
-    }
-    void addPlayerHealthBar(HealthBar* hpBar)
-    {
-        m_playerHealthBar = hpBar;
-    }
-    bool gameOver()
-    {
-        return m_gameEnded;
-    }
+    void addPlayer(Player* newPlayer);
+    sf::Vector2f getPlayerPosition();
+    void addWallEntity(GameObjectWall* newEntity);
+    std::vector<GameObjectWall*> getWalls();
+    void addEnemy(GameActorBase* newEnemy);
+    void addCollectible(GameObjectPowerup* newCollectible);
+    void addScenery(Scenery* newScenery);
+    void addPlayerHealthBar(HealthBar* hpBar);
+    bool gameOver();
 
 private:
     float m_frameRate;

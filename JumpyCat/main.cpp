@@ -326,6 +326,8 @@ int main()
     bool paused{ false };
     float pauseAccumulator{0.0f};
 
+    SoundManager& soundInstance = SoundManager::getInstance();
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -372,6 +374,7 @@ int main()
 
         // ===== UPDATE =====
         engine.update(dt);
+        AudioManager::update(dt);
 
         // move camera
         window.setView(mainView);

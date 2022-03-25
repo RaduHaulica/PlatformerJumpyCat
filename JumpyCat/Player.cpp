@@ -1,7 +1,5 @@
 #include "Player.h"
 
-#include "Input.h"
-#include "PlayerState.h"
 #include "GameEngine.h"
 
 Player::Player(std::string name, sf::Vector2f size) :
@@ -242,6 +240,10 @@ void Player::collideCollectible(GameObjectBase* collidedObject)
 {
     collidedObject->kill();
     m_coinsCollected++;
+
+    SoundId coinSound;
+    coinSound.m_name = "coin_collected";
+    AudioManager::playSound(coinSound);
 }
 
 void Player::onEntry(GameObjectBase* collidedObject)

@@ -243,3 +243,51 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
 
     return results;
 }
+
+void GameEngine::addPlayer(Player* newPlayer)
+{
+    m_playerEntities.push_back(newPlayer);
+    newPlayer->m_parentGameEngine = this;
+}
+
+sf::Vector2f GameEngine::getPlayerPosition()
+{
+    return m_playerEntities[0]->m_colliderComponent.m_colliders[0].getPosition();
+}
+
+void GameEngine::addWallEntity(GameObjectWall* newEntity)
+{
+    m_gameWallEntities.push_back(newEntity);
+    newEntity->m_parentGameEngine = this;
+}
+
+std::vector<GameObjectWall*> GameEngine::getWalls()
+{
+    return m_gameWallEntities;
+}
+
+void GameEngine::addEnemy(GameActorBase* newEnemy)
+{
+    m_enemyEntities.push_back(newEnemy);
+    newEnemy->m_parentGameEngine = this;
+}
+
+void GameEngine::addCollectible(GameObjectPowerup* newCollectible)
+{
+    m_collectibleEntities.push_back(newCollectible);
+}
+
+void GameEngine::addScenery(Scenery* newScenery)
+{
+    m_sceneryEntities.push_back(newScenery);
+}
+
+void GameEngine::addPlayerHealthBar(HealthBar* hpBar)
+{
+    m_playerHealthBar = hpBar;
+}
+
+bool GameEngine::gameOver()
+{
+    return m_gameEnded;
+}
