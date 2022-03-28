@@ -16,10 +16,10 @@ class SoundManager
 public:
 	static SoundManager& getInstance();
 
-	void initialize();
+	static void initialize();
 
 	~SoundManager();
-	sf::SoundBuffer* getSound(std::string);
+	std::unique_ptr<sf::Sound> getSound(std::string);
 
 	std::map<std::string, sf::SoundBuffer*> m_sounds;
 private:

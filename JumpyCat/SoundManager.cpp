@@ -3,39 +3,43 @@
 SoundManager& SoundManager::getInstance()
 {
 	static SoundManager* instance = new SoundManager();
-	instance->initialize();
 	return *instance;
 }
 
 SoundManager::SoundManager()
 {
-	std::string basePath = "./assets/sounds/";
+	//std::string basePath = "./assets/sounds/";
 
-	sf::SoundBuffer* jumpingSound = new sf::SoundBuffer();
-	jumpingSound->loadFromFile(basePath + "cat_jumping.ogg");
-	m_sounds.insert_or_assign("cat_jumping", jumpingSound);
+	//sf::SoundBuffer* jumpingSound = new sf::SoundBuffer();
+	//jumpingSound->loadFromFile(basePath + "cat_jumping.ogg");
+	//m_sounds.insert_or_assign("cat_jumping", jumpingSound);
 
-	sf::SoundBuffer* coinCollectSound = new sf::SoundBuffer();
-	coinCollectSound->loadFromFile(basePath + "powerup_coin2.ogg");
-	m_sounds.insert_or_assign("coin_collect", coinCollectSound);
+	//sf::SoundBuffer* coinCollectSound = new sf::SoundBuffer();
+	//coinCollectSound->loadFromFile(basePath + "powerup_coin2.ogg");
+	//m_sounds.insert_or_assign("coin_collect", coinCollectSound);
 }
 
 void SoundManager::initialize()
 {
+	// makes sure there's an instance the first time the function is called
+	SoundManager& self = getInstance();
+
 	std::string basePath = "./assets/sounds/";
 
 	sf::SoundBuffer* jumpingSound = new sf::SoundBuffer();
 	jumpingSound->loadFromFile(basePath + "cat_jumping.ogg");
-	m_sounds.insert_or_assign("cat_jumping", jumpingSound);
+	self.m_sounds.insert_or_assign("cat_jumping", jumpingSound);
 
 	sf::SoundBuffer* coinCollectSound = new sf::SoundBuffer();
 	coinCollectSound->loadFromFile(basePath + "powerup_coin2.ogg");
-	m_sounds.insert_or_assign("coin_collected", coinCollectSound);
+	self.m_sounds.insert_or_assign("coin_collected", coinCollectSound);
 }
 
-sf::SoundBuffer* SoundManager::getSound(std::string soundName)
+std::unique_ptr<sf::Sound> SoundManager::getSound(std::string soundName)
 {
-	return m_sounds[soundName];
+	std::unique_ptr<sf::Sound> result = std::make_unique<sf::Sound>();
+	result->setBuffer(*m_sounds[soundName]);
+	return std::move(result);
 }
 
 SoundManager::~SoundManager()

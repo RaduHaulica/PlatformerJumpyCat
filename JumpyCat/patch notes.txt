@@ -23,17 +23,22 @@ pause;
 health bar + interactions with enemy;
 collision 'events';
 
-0.6 - latest release
+0.6
 game object factory - postponed;
 collectible + score;
 sound library manager + audio manager (message queue, singleton);
 
-0.7 - current WIP
+0.7 - latest release
+audio is handled with unique pointers;
+fixed sound memory leak, pointers are kept alive while they play on a different thread;
+
+0.8 - current WIP
 starting enemy + state;
 starting observer for achievements?
 
 next:
-fix sound leak? make actual singleton;
+make sound classes actual singletons;
+game object factory;
 enemy movement;
 player damage state (movement, animation);
 enemy damage state (movement, animation);

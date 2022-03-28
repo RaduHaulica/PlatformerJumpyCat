@@ -42,8 +42,8 @@ void GameEngine::update(float dt)
             entity->update(m_frameTime);
         for (auto& enemy : m_enemyEntities)
             enemy->update(m_frameTime);
-		for (auto& entity : m_gameWallEntities)
-			entity->update(m_frameTime);
+		for (auto& wall : m_gameWallEntities)
+            wall->update(m_frameTime);
 
 		// collisions
 		checkCollisions();
@@ -165,12 +165,12 @@ void GameEngine::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     for (auto& scenery : m_sceneryEntities)
         scenery->draw(target, states);
-    for (auto& entity : m_gameWallEntities)
-        entity->draw(target, states);
-    for (auto& entity : m_collectibleEntities)
-        entity->draw(target, states);
-    for (auto& entity : m_enemyEntities)
-        entity->draw(target, states);
+    for (auto& wall : m_gameWallEntities)
+        wall->draw(target, states);
+    for (auto& collectible : m_collectibleEntities)
+        collectible->draw(target, states);
+    for (auto& enemy : m_enemyEntities)
+        enemy->draw(target, states);
     for (auto& player : m_playerEntities)
         player->draw(target, states);
     m_playerHealthBar->draw(target, states);

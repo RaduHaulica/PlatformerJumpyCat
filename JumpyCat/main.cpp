@@ -326,7 +326,7 @@ int main()
     bool paused{ false };
     float pauseAccumulator{0.0f};
 
-    SoundManager& soundInstance = SoundManager::getInstance();
+    SoundManager::initialize();
 
     while (window.isOpen())
     {

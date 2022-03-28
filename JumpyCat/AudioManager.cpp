@@ -1,7 +1,8 @@
 #include "AudioManager.h"
 
 int AudioManager::m_pendingMessageCount = 0;
-PlayMessage AudioManager::m_pendingMessages[AudioManager::MAX_PENDING_MESSAGES];
+std::array<PlayMessage, AudioManager::MAX_PENDING_MESSAGES> AudioManager::m_pendingMessages;
+std::vector<std::unique_ptr<sf::Sound>> AudioManager::m_currentlyPlayingSounds;
 
 AudioManager::AudioManager()
 {
@@ -17,17 +18,28 @@ void AudioManager::update(float dt)
 {
 	for (int i = 0; i < AudioManager::m_pendingMessageCount; i++)
 	{
-		sf::Sound* resource = loadSound(AudioManager::m_pendingMessages[i].id);
-		startSound(resource, AudioManager::m_pendingMessages[i].volume);
+		std::unique_ptr<sf::Sound> resource = loadSound(AudioManager::m_pendingMessages[i].id);
+		//startSound(std::move(resource), AudioManager::m_pendingMessages[i].volume);
+		resource->setVolume(AudioManager::m_pendingMessages[i].volume);
+		resource->play();
+		AudioManager::m_currentlyPlayingSounds.push_back(std::move(resource));
 	}
 	AudioManager::m_pendingMessageCount = 0;
+
+	for (int i = 0; i < AudioManager::m_currentlyPlayingSounds.size(); i++)
+	{
+		if (m_currentlyPlayingSounds[i]->getStatus() == sf::SoundSource::Status::Stopped)
+		{
+			m_currentlyPlayingSounds.erase(m_currentlyPlayingSounds.begin() + i);
+			i--;
+		}
+	}
 }
 
 void AudioManager::playSound(SoundId id, int volume)
 {
-	//assert(m_pendingMessageCount < MAX_PENDING_MESSAGES);
 	if (AudioManager::m_pendingMessageCount >= MAX_PENDING_MESSAGES)
-		exit(-1);
+		return;
 
 	for (int i = 0; i < AudioManager::m_pendingMessageCount; i++)
 	{
@@ -44,16 +56,16 @@ void AudioManager::playSound(SoundId id, int volume)
 	AudioManager::m_pendingMessageCount++;
 }
 
-sf::Sound* AudioManager::loadSound(SoundId id)
+std::unique_ptr<sf::Sound> AudioManager::loadSound(SoundId id)
 {
-	sf::Sound* sound = new sf::Sound();
+	std::unique_ptr<sf::Sound> sound;
 	//sound.setBuffer(*m_soundManager.getInstance().getSound(id.getSoundName()));
 	//sound.setBuffer(*SoundManager::getInstance().getSound(id.getSoundName()));
-	sound->setBuffer(*SoundManager::getInstance().m_sounds[id.getSoundName()]);
-	return sound;
+	sound = SoundManager::getInstance().getSound(id.getSoundName());
+	return std::move(sound);
 }
 
-void AudioManager::startSound(sf::Sound* sound, int volume)
+void AudioManager::startSound(std::unique_ptr<sf::Sound> sound, int volume)
 {
 	sound->setVolume(volume);
 	sound->play();
