@@ -24,6 +24,7 @@
     <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="GameActorBase.h" />
+    <ClInclude Include="GameActorEnemy.h" />
     <ClInclude Include="GameActorState.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameObjectPowerup.h" />
@@ -45,6 +46,7 @@
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="GameActorBase.cpp" />
+    <ClCompile Include="GameActorEnemy.cpp" />
     <ClCompile Include="GameActorState.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObjectWall.cpp" />

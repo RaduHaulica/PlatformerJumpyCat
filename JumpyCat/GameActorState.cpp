@@ -8,22 +8,22 @@
 DuckingState::DuckingState()
 {}
 
-void DuckingState::update(GameActorBase& player, float dt)
+void DuckingState::update(GameActorBase& actor, float dt)
 {}
 
-IGameActorState* DuckingState::handleInput(GameActorBase& player, Input input)
+IGameActorState* DuckingState::handleInput(GameActorBase& actor, Input input)
 {
-    if (!player.isGrounded())
+    if (!actor.isGrounded())
     {
         return new FallingState();
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
-        player.faceLeft();
+        actor.faceLeft();
     }
     if (input.control == CONTROLS::PRESSED_RIGHT)
     {
-        player.faceRight();
+        actor.faceRight();
     }
     if (input.control == CONTROLS::RELEASED_DOWN)
     {
@@ -31,41 +31,41 @@ IGameActorState* DuckingState::handleInput(GameActorBase& player, Input input)
     }
     return nullptr; // stay in current state
 }
-void DuckingState::onEntry(GameActorBase& player)
+void DuckingState::onEntry(GameActorBase& actor)
 {
-    sf::Vector2f colliderSize = player.m_colliderComponent.m_colliders[0].getSize();
+    sf::Vector2f colliderSize = actor.m_colliderComponent.m_colliders[0].getSize();
     colliderSize.y = colliderSize.y / 2;
-    player.m_colliderComponent.m_colliders[0].setSize(colliderSize);
-    player.m_colliderComponent.m_offsets[0] += sf::Vector2f({ 0, colliderSize.y });
+    actor.m_colliderComponent.m_colliders[0].setSize(colliderSize);
+    actor.m_colliderComponent.m_offsets[0] += sf::Vector2f({ 0, colliderSize.y });
 
-    player.m_acceleration = sf::Vector2f({ 0.0f, 0.0f });
-    player.m_velocity = sf::Vector2f({ 0.0f, 0.0f });
-    player.setMessage("Entered DuckingState");
-    player.m_graphicsComponent.m_currentAnimation = "ducking";
-    player.m_graphicsComponent.reset();
-    player.setPosition(player.m_position);
-    player.m_currentStateName = "ducking";
+    actor.m_acceleration = sf::Vector2f({ 0.0f, 0.0f });
+    actor.m_velocity = sf::Vector2f({ 0.0f, 0.0f });
+    actor.setMessage("Entered DuckingState");
+    actor.m_graphicsComponent.m_currentAnimation = "ducking";
+    actor.m_graphicsComponent.reset();
+    actor.setPosition(actor.m_position);
+    actor.m_currentStateName = "ducking";
 }
-void DuckingState::onExit(GameActorBase& player)
+void DuckingState::onExit(GameActorBase& actor)
 {
-    sf::Vector2f colliderSize = player.m_colliderComponent.m_colliders[0].getSize();
-    player.m_colliderComponent.m_offsets[0] -= sf::Vector2f({ 0, colliderSize.y });
+    sf::Vector2f colliderSize = actor.m_colliderComponent.m_colliders[0].getSize();
+    actor.m_colliderComponent.m_offsets[0] -= sf::Vector2f({ 0, colliderSize.y });
     colliderSize.y = colliderSize.y * 2;
-    player.m_colliderComponent.m_colliders[0].setSize(colliderSize);
-    player.setMessage("Exited DuckingState\n");
-    player.m_graphicsComponent.reset();
+    actor.m_colliderComponent.m_colliders[0].setSize(colliderSize);
+    actor.setMessage("Exited DuckingState\n");
+    actor.m_graphicsComponent.reset();
 }
 
 // ===== ===== ===== ===== STANDING STATE ===== ===== ===== =====
 
-void StandingState::update(GameActorBase& player, float dt)
+void StandingState::update(GameActorBase& actor, float dt)
 {
 
 }
 
-IGameActorState* StandingState::handleInput(GameActorBase& player, Input input)
+IGameActorState* StandingState::handleInput(GameActorBase& actor, Input input)
 {
-    if (!player.isGrounded())
+    if (!actor.isGrounded())
     {
         return new FallingState();
     }
@@ -75,12 +75,12 @@ IGameActorState* StandingState::handleInput(GameActorBase& player, Input input)
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
-        player.faceLeft();
+        actor.faceLeft();
         return new MovingState();
     }
     if (input.control == CONTROLS::PRESSED_RIGHT)
     {
-        player.faceRight();
+        actor.faceRight();
         return new MovingState();
     }
     if (input.control == CONTROLS::PRESSED_DOWN)
@@ -90,20 +90,20 @@ IGameActorState* StandingState::handleInput(GameActorBase& player, Input input)
 
     return nullptr; // stay in current state
 }
-void StandingState::onEntry(GameActorBase& player)
+void StandingState::onEntry(GameActorBase& actor)
 {
-    player.setMessage("Entered StandingState");
-    player.m_acceleration = { 0.0f, 0.0f };
-    player.m_velocity = { 0.0f, 0.0f };
-    player.m_graphicsComponent.m_currentAnimation = "standing";
-    player.m_graphicsComponent.reset();
-    player.setPosition(player.m_position);
-    player.m_currentStateName = "standing";
+    actor.setMessage("Entered StandingState");
+    actor.m_acceleration = { 0.0f, 0.0f };
+    actor.m_velocity = { 0.0f, 0.0f };
+    actor.m_graphicsComponent.m_currentAnimation = "standing";
+    actor.m_graphicsComponent.reset();
+    actor.setPosition(actor.m_position);
+    actor.m_currentStateName = "standing";
 }
-void StandingState::onExit(GameActorBase& player)
+void StandingState::onExit(GameActorBase& actor)
 {
-    player.setMessage("Exited StandingState\n");
-    player.m_graphicsComponent.reset();
+    actor.setMessage("Exited StandingState\n");
+    actor.m_graphicsComponent.reset();
 }
 
 // ===== ===== ===== ===== MOVING STATE ===== ===== ===== =====
@@ -112,13 +112,13 @@ MovingState::MovingState() :
     m_movementSpeed{ 400.0f }
 {}
 
-void MovingState::update(GameActorBase& player, float dt)
+void MovingState::update(GameActorBase& actor, float dt)
 {
 }
 
-IGameActorState* MovingState::handleInput(GameActorBase& player, Input input)
+IGameActorState* MovingState::handleInput(GameActorBase& actor, Input input)
 {
-    if (!player.isGrounded())
+    if (!actor.isGrounded())
     {
         return new FallingState(true);
     }
@@ -128,15 +128,15 @@ IGameActorState* MovingState::handleInput(GameActorBase& player, Input input)
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
-        player.faceLeft();
-        if (!player.m_touchingLeft)
-            player.m_velocity.x = -m_movementSpeed;
+        actor.faceLeft();
+        if (!actor.m_touchingLeft)
+            actor.m_velocity.x = -m_movementSpeed;
     }
     if (input.control == CONTROLS::PRESSED_RIGHT)
     {
-        player.faceRight();
-        if (!player.m_touchingRight)
-            player.m_velocity.x = m_movementSpeed;
+        actor.faceRight();
+        if (!actor.m_touchingRight)
+            actor.m_velocity.x = m_movementSpeed;
     }
     if (input.control == CONTROLS::RELEASED_LEFT)
     {
@@ -154,18 +154,18 @@ IGameActorState* MovingState::handleInput(GameActorBase& player, Input input)
     return nullptr; // stay in current state
 }
 
-void MovingState::onEntry(GameActorBase& player)
+void MovingState::onEntry(GameActorBase& actor)
 {
-    player.m_graphicsComponent.m_currentAnimation = "moving";
-    player.m_graphicsComponent.reset();
-    player.setPosition(player.m_position);
-    player.m_currentStateName = "moving";
-    player.setMessage("Entered MovingState");
+    actor.m_graphicsComponent.m_currentAnimation = "moving";
+    actor.m_graphicsComponent.reset();
+    actor.setPosition(actor.m_position);
+    actor.m_currentStateName = "moving";
+    actor.setMessage("Entered MovingState");
 }
-void MovingState::onExit(GameActorBase& player)
+void MovingState::onExit(GameActorBase& actor)
 {
-    player.setMessage("Exited MovingState\n");
-    player.m_graphicsComponent.reset();
+    actor.setMessage("Exited MovingState\n");
+    actor.m_graphicsComponent.reset();
 }
 
 // ===== ===== ===== ===== JUMPING STATE ===== ===== ===== =====
@@ -177,36 +177,36 @@ JumpingState::JumpingState() :
     m_peaked{ false }
 {}
 
-void JumpingState::update(GameActorBase& player, float dt)
+void JumpingState::update(GameActorBase& actor, float dt)
 {
     if (m_peaked)
     {
         m_hangTime += dt;
-        player.m_velocity.y = 0.0f;
+        actor.m_velocity.y = 0.0f;
     }
 }
 
-IGameActorState* JumpingState::handleInput(GameActorBase& player, Input input)
+IGameActorState* JumpingState::handleInput(GameActorBase& actor, Input input)
 {
-    if (player.isGrounded())
+    if (actor.isGrounded())
     {
         return new StandingState();
     }
-    if (player.m_touchingTop)
+    if (actor.m_touchingTop)
     {
         m_peaked = true;
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
-        player.faceLeft();
-        player.m_velocity.x = -m_movementSpeed;
+        actor.faceLeft();
+        actor.m_velocity.x = -m_movementSpeed;
     }
     if (input.control == CONTROLS::PRESSED_RIGHT)
     {
-        player.faceRight();
-        player.m_velocity.x = m_movementSpeed;
+        actor.faceRight();
+        actor.m_velocity.x = m_movementSpeed;
     }
-    if (player.m_velocity.y >= 0.0f)
+    if (actor.m_velocity.y >= 0.0f)
     {
         m_peaked = true;
     }
@@ -218,24 +218,24 @@ IGameActorState* JumpingState::handleInput(GameActorBase& player, Input input)
     return nullptr; // stay in current state
 }
 
-void JumpingState::onEntry(GameActorBase& player)
+void JumpingState::onEntry(GameActorBase& actor)
 {
-    player.setMessage("Entered JumpingState");
-    player.m_grounded = false;
-    player.m_jumping = true;
-    player.m_platform = nullptr;
-    player.m_velocity.y = player.m_jumpHeightFactor * -200.0f;
-    player.m_acceleration.y = 800.0f;
-    player.m_graphicsComponent.m_currentAnimation = "jumping";
-    player.m_graphicsComponent.reset();
-    player.setPosition(player.m_position);
-    player.m_currentStateName = "jumping";
+    actor.setMessage("Entered JumpingState");
+    actor.m_grounded = false;
+    actor.m_jumping = true;
+    actor.m_platform = nullptr;
+    actor.m_velocity.y = actor.m_jumpHeightFactor * -200.0f;
+    actor.m_acceleration.y = 800.0f;
+    actor.m_graphicsComponent.m_currentAnimation = "jumping";
+    actor.m_graphicsComponent.reset();
+    actor.setPosition(actor.m_position);
+    actor.m_currentStateName = "jumping";
 }
-void JumpingState::onExit(GameActorBase& player)
+void JumpingState::onExit(GameActorBase& actor)
 {
-    player.setMessage("Exited JumpingState\n");
-    player.m_jumping = false;
-    player.m_graphicsComponent.reset();
+    actor.setMessage("Exited JumpingState\n");
+    actor.m_jumping = false;
+    actor.m_graphicsComponent.reset();
 }
 
 // ===== ===== ===== ===== FALLING STATE ===== ===== ===== =====
@@ -246,12 +246,12 @@ FallingState::FallingState(bool coyoteEnabled) :
     m_coyoteEnabled{ coyoteEnabled }
 {}
 
-void FallingState::update(GameActorBase& player, float dt)
+void FallingState::update(GameActorBase& actor, float dt)
 {
     m_coyoteTime += dt;
 }
 
-IGameActorState* FallingState::handleInput(GameActorBase& player, Input input)
+IGameActorState* FallingState::handleInput(GameActorBase& actor, Input input)
 {
     if (m_coyoteEnabled && input.control == CONTROLS::PRESSED_UP && m_coyoteTime < 0.1f)
     {
@@ -259,25 +259,25 @@ IGameActorState* FallingState::handleInput(GameActorBase& player, Input input)
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
     {
-        player.faceLeft();
-        if (!player.m_touchingLeft)
-            player.m_velocity.x = -m_movementSpeed;
+        actor.faceLeft();
+        if (!actor.m_touchingLeft)
+            actor.m_velocity.x = -m_movementSpeed;
     }
     if (input.control == CONTROLS::RELEASED_LEFT)
     {
-        player.m_velocity.x = 0.0f;
+        actor.m_velocity.x = 0.0f;
     }
     if (input.control == CONTROLS::PRESSED_RIGHT)
     {
-        player.faceRight();
-        if (!player.m_touchingRight)
-            player.m_velocity.x = m_movementSpeed;
+        actor.faceRight();
+        if (!actor.m_touchingRight)
+            actor.m_velocity.x = m_movementSpeed;
     }
     if (input.control == CONTROLS::RELEASED_RIGHT)
     {
-        player.m_velocity.x = 0.0f;
+        actor.m_velocity.x = 0.0f;
     }
-    if (player.isGrounded())
+    if (actor.isGrounded())
     {
         return new StandingState();
     }
@@ -285,21 +285,21 @@ IGameActorState* FallingState::handleInput(GameActorBase& player, Input input)
     return nullptr; // stay in current state
 }
 
-void FallingState::onEntry(GameActorBase& player)
+void FallingState::onEntry(GameActorBase& actor)
 {
-    player.setMessage("Entered FallingState");
-    player.m_velocity.x = 0.0f;
-    player.m_velocity.y = 2 * m_movementSpeed;
-    player.m_acceleration.y = 400.0f;
-    player.m_graphicsComponent.m_currentAnimation = "falling";
-    player.m_graphicsComponent.reset();
-    player.setPosition(player.m_position);
-    player.m_currentStateName = "falling";
-    player.m_grounded = false;
-    player.m_platform = nullptr;
+    actor.setMessage("Entered FallingState");
+    actor.m_velocity.x = 0.0f;
+    actor.m_velocity.y = 2 * m_movementSpeed;
+    actor.m_acceleration.y = 400.0f;
+    actor.m_graphicsComponent.m_currentAnimation = "falling";
+    actor.m_graphicsComponent.reset();
+    actor.setPosition(actor.m_position);
+    actor.m_currentStateName = "falling";
+    actor.m_grounded = false;
+    actor.m_platform = nullptr;
 }
-void FallingState::onExit(GameActorBase& player)
+void FallingState::onExit(GameActorBase& actor)
 {
-    player.setMessage("Exited FallingState\n");
-    player.m_graphicsComponent.reset();
+    actor.setMessage("Exited FallingState\n");
+    actor.m_graphicsComponent.reset();
 }

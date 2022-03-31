@@ -266,7 +266,7 @@ std::vector<GameObjectWall*> GameEngine::getWalls()
     return m_gameWallEntities;
 }
 
-void GameEngine::addEnemy(GameActorBase* newEnemy)
+void GameEngine::addEnemy(GameActorEnemy* newEnemy)
 {
     m_enemyEntities.push_back(newEnemy);
     newEnemy->m_parentGameEngine = this;

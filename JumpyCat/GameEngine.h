@@ -11,6 +11,7 @@
 #include "GameObjectPowerup.h"
 #include "Scenery.h"
 #include "GameActorBase.h"
+#include "GameActorEnemy.h"
 #include "Player.h"
 #include "HealthBar.h"
 
@@ -31,7 +32,7 @@ public:
     sf::Vector2f getPlayerPosition();
     void addWallEntity(GameObjectWall* newEntity);
     std::vector<GameObjectWall*> getWalls();
-    void addEnemy(GameActorBase* newEnemy);
+    void addEnemy(GameActorEnemy* newEnemy);
     void addCollectible(GameObjectPowerup* newCollectible);
     void addScenery(Scenery* newScenery);
     void addPlayerHealthBar(HealthBar* hpBar);
@@ -51,7 +52,7 @@ private:
 
     std::vector<GameObjectWall*> m_gameWallEntities;
     std::vector<GameObjectPowerup*> m_collectibleEntities;
-    std::vector<GameActorBase*> m_enemyEntities;
+    std::vector<GameActorEnemy*> m_enemyEntities;
     std::vector<Player*> m_playerEntities;
     std::vector<Scenery*> m_sceneryEntities;
     HealthBar* m_playerHealthBar;

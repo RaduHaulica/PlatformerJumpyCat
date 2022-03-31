@@ -32,7 +32,7 @@ sound library manager + audio manager (message queue, singleton);
 audio is handled with unique pointers;
 fixed sound memory leak, pointers are kept alive while they play on a different thread;
 
-0.8 - current WIP
+0.8 - current & WIP
 starting enemy + state;
 starting observer for achievements?
 
@@ -43,3 +43,4 @@ enemy movement;
 player damage state (movement, animation);
 enemy damage state (movement, animation);
 half jumping state? would work with enemy boop;
+camera class + camera on a spring?

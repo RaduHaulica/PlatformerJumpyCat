@@ -3,30 +3,11 @@
 #include "GameEngine.h"
 
 Player::Player(std::string name, sf::Vector2f size) :
-    m_name{ name },
-    m_size{ size },
-    m_currentStateName { "" },
-    m_facingRight{ true },
-    m_grounded{false},
-    m_touchingLeft{false},
-    m_touchingRight{false},
-    m_touchingTop{false},
-    m_acceleration{ sf::Vector2f({ 0.0f, 0.0f }) },
-    m_velocity{ sf::Vector2f({ 0.0f, 0.0f }) },
-    m_positionOffset{ sf::Vector2f({ 0.0f, 0.0f }) },
-    m_jumpHeightFactor{ 3.0f },
-    m_platform { nullptr },
+    GameActorBase(name, size),
     m_currentHealth{ 3 },
     m_maximumHealth{ 3 },
     m_coinsCollected{ 0 }
-{
-    m_feelers.setPrimitiveType(sf::PrimitiveType::Points);
-    //m_graphicsComponent.m_currentAnimation = "standing";
-
-    m_anchor.setFillColor(sf::Color::Green);
-    m_anchor.setOrigin({ 5,5 });
-    m_anchor.setRadius(5);
-}
+{}
 
 void Player::update(float dt)
 {
@@ -72,34 +53,6 @@ void Player::handleInput(Input input)
 		m_currentState->onEntry(*this);
     }
      
-}
-
-void Player::initializeFeelers()
-{
-    sf::RectangleShape collider = m_colliderComponent.m_colliders[0];
-
-    bottomLeftFeeler = collider.getPosition() + sf::Vector2f({ collider.getSize().x * 0.05f, collider.getSize().y * 1.05f });
-    bottomRightFeeler = collider.getPosition() + sf::Vector2f({ collider.getSize().x * 0.95f, collider.getSize().y * 1.05f });
-
-    leftTopFeeler = collider.getPosition() + sf::Vector2f({ collider.getSize().x * (-0.05f), collider.getSize().y * 0.05f });
-    leftBottomFeeler = collider.getPosition() + sf::Vector2f({ collider.getSize().x * (-0.05f), collider.getSize().y * 0.95f });
-
-    rightTopFeeler = collider.getPosition() + sf::Vector2f({ collider.getSize().x * 1.05f, collider.getSize().y * 0.05f });
-    rightBottomFeeler = collider.getPosition() + sf::Vector2f({ collider.getSize().x * 1.05f, collider.getSize().y * 0.95f });
-
-    topLeftFeeler = collider.getPosition() + sf::Vector2f({ collider.getSize().x * 0.1f, collider.getSize().y * (-0.05f) });
-    topRightFeeler = collider.getPosition() + sf::Vector2f({ collider.getSize().x * 0.9f, collider.getSize().y * (-0.05f) });
-
-    sf::Color color = sf::Color::Red;
-    m_feelers.clear();
-    m_feelers.append({ bottomLeftFeeler, color });
-    m_feelers.append({ bottomRightFeeler, color });
-    m_feelers.append({ leftTopFeeler, color });
-    m_feelers.append({ leftBottomFeeler, color });
-    m_feelers.append({ rightTopFeeler, color });
-    m_feelers.append({ rightBottomFeeler, color });
-    m_feelers.append({ topLeftFeeler, color });
-    m_feelers.append({ topRightFeeler, color });
 }
 
 void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const

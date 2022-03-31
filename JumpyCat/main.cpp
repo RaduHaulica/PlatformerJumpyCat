@@ -258,9 +258,9 @@ int main()
     HealthBar* healthBar = new HealthBar({0, 0});
     loadHealthBarGraphics(textureManager, player, healthBar);
 
-    GameActorBase* reaper = new GameActorBase("Reaper", { 100, 100 });
+    GameActorEnemy* reaper = new GameActorEnemy("Reaper", { 100, 100 });
     loadReaperGraphics(textureManager, reaper);
-    reaper->setPosition({ 700, -300 });
+    reaper->setPosition({ 700, -398 });
 
 
     GameEngine engine;

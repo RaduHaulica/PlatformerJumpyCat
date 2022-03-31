@@ -39,7 +39,7 @@ void GameActorBase::update(float dt)
 
     setPosition(m_position);
     GameObjectBase::update(dt);
-    //std::cout << "Player collisions: " << m_collidedWith.size() << "\n";
+    //std::cout << "actor collisions: " << m_collidedWith.size() << "\n";
 
     auto [x, y] = m_graphicsComponent.getScale();
     if ((m_facingRight && x < 0) || (!m_facingRight && x > 0))
