@@ -50,7 +50,32 @@ void createCoin(TextureManager& tm, GameEngine& engine, sf::Vector2f position)
     GameObjectPowerup* coin = new GameObjectPowerup;
     loadCoinGraphics(tm, coin);
     coin->setPosition(position);
+    coin->m_objectType = GameObjectType::COIN;
     engine.addCollectible(coin);
+}
+
+void loadRuneGraphics(TextureManager& tm, GameObjectBase* rune)
+{
+	Animation runeAnimation(tm.getTexture("rune"), 1, { 56, 93 }, { 32, 48 }, 0.0f, false);
+	rune->m_graphicsComponent.addAnimation("standing", runeAnimation, { 0, 0 });
+	rune->m_graphicsComponent.m_currentAnimation = "standing";
+
+	sf::RectangleShape collider1 = sf::RectangleShape();
+	collider1.setFillColor(sf::Color::Transparent);
+	collider1.setOutlineColor(sf::Color::Red);
+	collider1.setOutlineThickness(1);
+	collider1.setPosition({ 0,0 });
+	collider1.setSize({ 32, 48 });
+	rune->m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
+}
+
+void createRune(TextureManager& tm, GameEngine& engine, sf::Vector2f position)
+{
+	GameObjectPowerup* rune = new GameObjectPowerup;
+	loadRuneGraphics(tm, rune);
+	rune->setPosition(position);
+	rune->m_objectType = GameObjectType::RUNE;
+	engine.addCollectible(rune);
 }
 
 void loadHealthBarGraphics(TextureManager& tm, Player* player, HealthBar* healthBar)
@@ -121,7 +146,7 @@ void loadReaperGraphics(TextureManager& tm, GameActorBase* reaper)
     Animation hurtingAnimation(tm.getTexture("reaper_hurting"), 11, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
     Animation dyingAnimation(tm.getTexture("reaper_dying"), 11, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
 
-    reaper->m_graphicsComponent.addAnimation("walking", walkingAnimation, { -25, 0 });
+    reaper->m_graphicsComponent.addAnimation("moving", walkingAnimation, { -25, 0 });
     reaper->m_graphicsComponent.addAnimation("standing", standingAnimation, { -25, 0 });
     reaper->m_graphicsComponent.addAnimation("jumping", standingAnimation, { -25, 0 });
     reaper->m_graphicsComponent.addAnimation("falling", fallingAnimation, { -25, 0 });
@@ -273,11 +298,13 @@ int main()
     //GameObjectPowerup* coin = new GameObjectPowerup;
     //loadCoinGraphics(textureManager, coin);
     //GameObjectFactory coinFactory(textureManager, engine, coin);
-    //engine.addCollectible(coinFactory.createObject({ 400, 300 }));
-    //engine.addCollectible(coinFactory.createObject({ 200, 200 }));
+    //engine.addCollectible(dynamic_cast<GameObjectPowerup*>(coinFactory.createObject({ 400, 300 })));
+    //engine.addCollectible(dynamic_cast<GameObjectPowerup*>(coinFactory.createObject({ 200, 200 })));
 
     createCoin(textureManager, engine, { 200, 200 });
     createCoin(textureManager, engine, { 400, 200 });
+
+    createRune(textureManager, engine, { 2100, 300 });
 
 
     // extended background for main view
@@ -369,8 +396,8 @@ int main()
 
         // ===== INPUT =====
         // in engine update
-        std::vector<Input> input = engine.collectInput();
-        engine.handleInput(input);
+		std::vector<Input> input = engine.collectInput();
+		engine.handleInput(input);
 
         // ===== UPDATE =====
         engine.update(dt);

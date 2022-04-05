@@ -38,13 +38,16 @@ void Animation::update(float dt, sf::Vector2f position)
 void Animation::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(m_animationFrames[m_currentFrame]);
-	sf::RectangleShape frame;
-	frame.setFillColor(sf::Color::Transparent);
-	frame.setOutlineColor(sf::Color::Blue);
-	frame.setOutlineThickness(1);
-	frame.setPosition(m_animationFrames[m_currentFrame].getPosition());
-	frame.setSize({ m_animationFrames[m_currentFrame].getGlobalBounds().width, m_animationFrames[m_currentFrame].getGlobalBounds().height });
-	target.draw(frame);
+    if (Config::showSpriteBoundingBoxes)
+    {
+		sf::RectangleShape frame;
+		frame.setFillColor(sf::Color::Transparent);
+		frame.setOutlineColor(sf::Color::Blue);
+		frame.setOutlineThickness(1);
+		frame.setPosition(m_animationFrames[m_currentFrame].getPosition());
+		frame.setSize({ m_animationFrames[m_currentFrame].getGlobalBounds().width, m_animationFrames[m_currentFrame].getGlobalBounds().height });
+		target.draw(frame);
+    }
 }
 
 void Animation::reset()

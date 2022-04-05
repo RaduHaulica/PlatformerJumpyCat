@@ -60,6 +60,8 @@ public:
     bool m_peaked;
     float m_hangTime;
     float m_maxHangTime;
+    float m_timeFromStart;
+    float m_minJumpDelay;
 
     PlayerJumpingState();
     virtual IPlayerState* handleInput(Player& player, Input input);

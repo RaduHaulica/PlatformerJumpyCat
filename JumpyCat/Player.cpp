@@ -6,8 +6,12 @@ Player::Player(std::string name, sf::Vector2f size) :
     GameActorBase(name, size),
     m_currentHealth{ 3 },
     m_maximumHealth{ 3 },
-    m_coinsCollected{ 0 }
-{}
+    m_coinsCollected{ 0 },
+	m_doubleJumpEnabled{ false },
+    m_doubleJumped{ false }
+{
+    m_objectType = GameObjectType::PLAYER;
+}
 
 void Player::update(float dt)
 {
@@ -60,8 +64,11 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(m_graphicsComponent, states);
     target.draw(m_colliderComponent, states);
 
-    target.draw(m_anchor);
-    target.draw(m_feelers);
+    if (Config::showColliderBoundingBoxes)
+    {
+		target.draw(m_anchor);
+		target.draw(m_feelers);
+    }
 }
 
 void Player::setPosition(sf::Vector2f position)
@@ -192,11 +199,25 @@ void Player::collideEnemy(GameObjectBase* collidedObject)
 void Player::collideCollectible(GameObjectBase* collidedObject)
 {
     collidedObject->kill();
-    m_coinsCollected++;
+	
+    if (collidedObject->m_objectType == GameObjectType::COIN)
+    {
+		m_coinsCollected++;
 
-    SoundId coinSound;
-    coinSound.m_name = "coin_collected";
-    AudioManager::playSound(coinSound);
+		SoundId coinSound;
+		coinSound.m_name = "coin_collected";
+		AudioManager::playSound(coinSound);
+    }
+    else if (collidedObject->m_objectType == GameObjectType::RUNE)
+    {
+        m_doubleJumpEnabled = true;
+		
+		SoundId runeSound;
+		runeSound.m_name = "rune_collected";
+        AudioManager::playSound(runeSound);
+    }
+	
+    return;
 }
 
 void Player::onEntry(GameObjectBase* collidedObject)

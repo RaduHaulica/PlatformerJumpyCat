@@ -28,18 +28,28 @@ game object factory - postponed;
 collectible + score;
 sound library manager + audio manager (message queue, singleton);
 
-0.7 - latest release
+0.7
 audio is handled with unique pointers;
 fixed sound memory leak, pointers are kept alive while they play on a different thread;
 
-0.8 - current & WIP
-starting enemy + state;
+0.8
+enemy + state;
+
+0.9 - latest release
+fixed enemy animation;
+enemy movement seems ok;
+double jump + rune power up;
+mock input for enemy state transition;
+"global" config for feature flags;
+
+0.10 - current & WIP
+collectible placement;
+end game;
 starting observer for achievements?
 
 next:
 make sound classes actual singletons;
 game object factory;
-enemy movement;
 player damage state (movement, animation);
 enemy damage state (movement, animation);
 half jumping state? would work with enemy boop;

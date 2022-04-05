@@ -6,6 +6,7 @@
 #include "GraphicsComponent.h"
 #include "ColliderComponent.h"
 #include "Input.h"
+#include "Utility.h"
 
 class GameEngine;
 
@@ -20,6 +21,7 @@ public:
     ColliderComponent m_colliderComponent;
     bool m_dead;
     sf::Vector2f m_position;
+    GameObjectType m_objectType;
 
     std::vector<GameObjectBase*> m_collidedWith;
 

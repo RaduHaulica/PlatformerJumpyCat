@@ -1,5 +1,6 @@
 #include "PlayerState.h"
 
+#include "Config.h"
 #include "Input.h"
 #include "Player.h"
 #include "Utility.h"
@@ -41,7 +42,8 @@ void PlayerDuckingState::onEntry(Player& player)
 
     player.m_acceleration = sf::Vector2f({ 0.0f, 0.0f });
     player.m_velocity = sf::Vector2f({ 0.0f, 0.0f });
-    player.setMessage("Entered DuckingState");
+    if (Config::showStateTransitions)
+        player.setMessage("Entered DuckingState");
     player.m_graphicsComponent.m_currentAnimation = "ducking";
     player.m_graphicsComponent.reset();
     player.setPosition(player.m_position);
@@ -53,7 +55,8 @@ void PlayerDuckingState::onExit(Player& player)
     player.m_colliderComponent.m_offsets[0] -= sf::Vector2f({ 0, colliderSize.y });
     colliderSize.y = colliderSize.y * 2;
     player.m_colliderComponent.m_colliders[0].setSize(colliderSize);
-    player.setMessage("Exited DuckingState\n");
+    if (Config::showStateTransitions)
+        player.setMessage("Exited DuckingState\n");
     player.m_graphicsComponent.reset();
 }
 
@@ -93,17 +96,20 @@ IPlayerState* PlayerStandingState::handleInput(Player& player, Input input)
 }
 void PlayerStandingState::onEntry(Player& player)
 {
-    player.setMessage("Entered StandingState");
+    if (Config::showStateTransitions)
+        player.setMessage("Entered StandingState");
     player.m_acceleration = { 0.0f, 0.0f };
     player.m_velocity = { 0.0f, 0.0f };
     player.m_graphicsComponent.m_currentAnimation = "standing";
     player.m_graphicsComponent.reset();
     player.setPosition(player.m_position);
     player.m_currentStateName = "standing";
+    player.m_doubleJumped = false;
 }
 void PlayerStandingState::onExit(Player& player)
 {
-    player.setMessage("Exited StandingState\n");
+    if (Config::showStateTransitions)
+        player.setMessage("Exited StandingState\n");
     player.m_graphicsComponent.reset();
 }
 
@@ -161,11 +167,13 @@ void PlayerMovingState::onEntry(Player& player)
     player.m_graphicsComponent.reset();
     player.setPosition(player.m_position);
     player.m_currentStateName = "moving";
-    player.setMessage("Entered MovingState");
+    if (Config::showStateTransitions)
+        player.setMessage("Entered MovingState");
 }
 void PlayerMovingState::onExit(Player& player)
 {
-    player.setMessage("Exited MovingState\n");
+    if (Config::showStateTransitions)
+        player.setMessage("Exited MovingState\n");
     player.m_graphicsComponent.reset();
 }
 
@@ -175,7 +183,9 @@ PlayerJumpingState::PlayerJumpingState():
     m_movementSpeed{ 200.0f },
     m_hangTime{ 0.0f },
     m_maxHangTime{ 0.1f },
-    m_peaked{false}
+    m_peaked{false},
+	m_minJumpDelay{0.5f},
+    m_timeFromStart{ 0.0f }
 {}
 
 void PlayerJumpingState::update(Player& player, float dt)
@@ -185,10 +195,19 @@ void PlayerJumpingState::update(Player& player, float dt)
         m_hangTime += dt;
         player.m_velocity.y = 0.0f;
     }
+    if (m_timeFromStart <= m_minJumpDelay)
+    {
+        m_timeFromStart += dt;
+    }
 }
 
 IPlayerState* PlayerJumpingState::handleInput(Player& player, Input input)
 {
+    if (player.m_doubleJumpEnabled && input.control == CONTROLS::PRESSED_UP && !player.m_doubleJumped && (m_timeFromStart>m_minJumpDelay))
+    {
+		player.m_doubleJumped = true;
+        return new PlayerJumpingState();
+    }
     if (player.isGrounded())
     {
         return new PlayerStandingState();
@@ -221,7 +240,8 @@ IPlayerState* PlayerJumpingState::handleInput(Player& player, Input input)
 
 void PlayerJumpingState::onEntry(Player& player)
 {
-    player.setMessage("Entered JumpingState");
+    if (Config::showStateTransitions)
+        player.setMessage("Entered JumpingState");
     player.m_grounded = false;
     player.m_jumping = true;
     player.m_platform = nullptr;
@@ -238,7 +258,8 @@ void PlayerJumpingState::onEntry(Player& player)
 }
 void PlayerJumpingState::onExit(Player& player)
 {
-    player.setMessage("Exited JumpingState\n");
+    if (Config::showStateTransitions)
+        player.setMessage("Exited JumpingState\n");
     player.m_jumping = false;
     player.m_graphicsComponent.reset();
 }
@@ -253,13 +274,19 @@ PlayerFallingState::PlayerFallingState(bool coyoteEnabled):
 
 void PlayerFallingState::update(Player& player, float dt)
 {
-    m_coyoteTime += dt;
+	if (m_coyoteTime < 0.1f)
+        m_coyoteTime += dt;
 }
 
 IPlayerState* PlayerFallingState::handleInput(Player& player, Input input)
 {
     if (m_coyoteEnabled && input.control == CONTROLS::PRESSED_UP && m_coyoteTime < 0.1f)
     {
+        return new PlayerJumpingState();
+    }
+    if (player.m_doubleJumpEnabled && input.control == CONTROLS::PRESSED_UP && !player.m_doubleJumped)
+    {
+        player.m_doubleJumped = true;
         return new PlayerJumpingState();
     }
     if (input.control == CONTROLS::PRESSED_LEFT)
@@ -292,7 +319,8 @@ IPlayerState* PlayerFallingState::handleInput(Player& player, Input input)
 
 void PlayerFallingState::onEntry(Player& player)
 {
-    player.setMessage("Entered FallingState");
+    if (Config::showStateTransitions)
+        player.setMessage("Entered FallingState");
     player.m_velocity.x = 0.0f;
     player.m_velocity.y = 2 * m_movementSpeed;
     player.m_acceleration.y = 400.0f;
@@ -305,6 +333,7 @@ void PlayerFallingState::onEntry(Player& player)
 }
 void PlayerFallingState::onExit(Player& player)
 {
-    player.setMessage("Exited FallingState\n");
+    if (Config::showStateTransitions)
+        player.setMessage("Exited FallingState\n");
     player.m_graphicsComponent.reset();
 }

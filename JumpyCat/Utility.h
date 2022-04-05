@@ -17,6 +17,15 @@ public:
 	}
 };
 
+static enum class GameObjectType
+{
+	WALL,
+	PLAYER,
+	ENEMY,
+	COIN,
+	RUNE
+};
+
 struct PlayMessage
 {
 	SoundId id;

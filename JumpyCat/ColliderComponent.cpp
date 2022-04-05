@@ -43,7 +43,7 @@ void ColliderComponent::update(float dt, sf::Vector2f position)
 
 void ColliderComponent::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	//if (config.debug)
+	if (Config::showColliderBoundingBoxes)
 	{
 		for (int i = 0; i < m_colliders.size(); i++)
 		{

@@ -4,12 +4,17 @@
 #include "Player.h"
 #include "GameActorBase.h"
 
-GameObjectWall::GameObjectWall() {}
+GameObjectWall::GameObjectWall()
+{
+    m_objectType = GameObjectType::WALL;
+}
 
 void GameObjectWall::collide(GameObjectBase* collidee)
 {
     GameObjectBase::collide(collidee);
 
+	// this was all moved to the player class
+	
     //sf::RectangleShape r2 = collidee->m_colliderComponent.m_colliders[0];
     //sf::RectangleShape r1 = m_colliderComponent.m_colliders[0];
     //sf::Vector2f position = r2.getPosition();

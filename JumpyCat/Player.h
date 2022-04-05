@@ -23,6 +23,9 @@ public:
     int m_maximumHealth;
     int m_coinsCollected;
 
+    bool m_doubleJumpEnabled;
+    bool m_doubleJumped;
+
     // methods
 
     Player(std::string name, sf::Vector2f size);

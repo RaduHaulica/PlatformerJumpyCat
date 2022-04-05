@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Config.h"
+
 #include "Interfaces.h"
 
 class Animation : public sf::Drawable

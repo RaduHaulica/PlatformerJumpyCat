@@ -33,6 +33,10 @@ void SoundManager::initialize()
 	sf::SoundBuffer* coinCollectSound = new sf::SoundBuffer();
 	coinCollectSound->loadFromFile(basePath + "powerup_coin2.ogg");
 	self.m_sounds.insert_or_assign("coin_collected", coinCollectSound);
+
+	sf::SoundBuffer* runeColectSound = new sf::SoundBuffer();
+	runeColectSound->loadFromFile(basePath + "powerup_rune.ogg");
+	self.m_sounds.insert_or_assign("rune_collected", runeColectSound);
 }
 
 std::unique_ptr<sf::Sound> SoundManager::getSound(std::string soundName)

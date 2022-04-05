@@ -1,5 +1,6 @@
 #include "GameActorState.h"
 
+#include "Config.h"
 #include "Input.h"
 #include "GameActorBase.h"
 
@@ -40,7 +41,8 @@ void DuckingState::onEntry(GameActorBase& actor)
 
     actor.m_acceleration = sf::Vector2f({ 0.0f, 0.0f });
     actor.m_velocity = sf::Vector2f({ 0.0f, 0.0f });
-    actor.setMessage("Entered DuckingState");
+    if (Config::showStateTransitions)
+        actor.setMessage("Entered DuckingState");
     actor.m_graphicsComponent.m_currentAnimation = "ducking";
     actor.m_graphicsComponent.reset();
     actor.setPosition(actor.m_position);
@@ -52,7 +54,8 @@ void DuckingState::onExit(GameActorBase& actor)
     actor.m_colliderComponent.m_offsets[0] -= sf::Vector2f({ 0, colliderSize.y });
     colliderSize.y = colliderSize.y * 2;
     actor.m_colliderComponent.m_colliders[0].setSize(colliderSize);
-    actor.setMessage("Exited DuckingState\n");
+    if (Config::showStateTransitions)
+        actor.setMessage("Exited DuckingState\n");
     actor.m_graphicsComponent.reset();
 }
 
@@ -92,7 +95,8 @@ IGameActorState* StandingState::handleInput(GameActorBase& actor, Input input)
 }
 void StandingState::onEntry(GameActorBase& actor)
 {
-    actor.setMessage("Entered StandingState");
+    if (Config::showStateTransitions)
+        actor.setMessage("Entered StandingState");
     actor.m_acceleration = { 0.0f, 0.0f };
     actor.m_velocity = { 0.0f, 0.0f };
     actor.m_graphicsComponent.m_currentAnimation = "standing";
@@ -102,14 +106,15 @@ void StandingState::onEntry(GameActorBase& actor)
 }
 void StandingState::onExit(GameActorBase& actor)
 {
-    actor.setMessage("Exited StandingState\n");
+    if (Config::showStateTransitions)
+        actor.setMessage("Exited StandingState\n");
     actor.m_graphicsComponent.reset();
 }
 
 // ===== ===== ===== ===== MOVING STATE ===== ===== ===== =====
 
 MovingState::MovingState() :
-    m_movementSpeed{ 400.0f }
+    m_movementSpeed{ 200.0f }
 {}
 
 void MovingState::update(GameActorBase& actor, float dt)
@@ -160,11 +165,13 @@ void MovingState::onEntry(GameActorBase& actor)
     actor.m_graphicsComponent.reset();
     actor.setPosition(actor.m_position);
     actor.m_currentStateName = "moving";
-    actor.setMessage("Entered MovingState");
+    if (Config::showStateTransitions)
+        actor.setMessage("Entered MovingState");
 }
 void MovingState::onExit(GameActorBase& actor)
 {
-    actor.setMessage("Exited MovingState\n");
+    if (Config::showStateTransitions)
+        actor.setMessage("Exited MovingState\n");
     actor.m_graphicsComponent.reset();
 }
 
@@ -220,7 +227,8 @@ IGameActorState* JumpingState::handleInput(GameActorBase& actor, Input input)
 
 void JumpingState::onEntry(GameActorBase& actor)
 {
-    actor.setMessage("Entered JumpingState");
+    if (Config::showStateTransitions)
+        actor.setMessage("Entered JumpingState");
     actor.m_grounded = false;
     actor.m_jumping = true;
     actor.m_platform = nullptr;
@@ -233,7 +241,8 @@ void JumpingState::onEntry(GameActorBase& actor)
 }
 void JumpingState::onExit(GameActorBase& actor)
 {
-    actor.setMessage("Exited JumpingState\n");
+    if (Config::showStateTransitions)
+        actor.setMessage("Exited JumpingState\n");
     actor.m_jumping = false;
     actor.m_graphicsComponent.reset();
 }
@@ -287,7 +296,8 @@ IGameActorState* FallingState::handleInput(GameActorBase& actor, Input input)
 
 void FallingState::onEntry(GameActorBase& actor)
 {
-    actor.setMessage("Entered FallingState");
+    if (Config::showStateTransitions)
+        actor.setMessage("Entered FallingState");
     actor.m_velocity.x = 0.0f;
     actor.m_velocity.y = 2 * m_movementSpeed;
     actor.m_acceleration.y = 400.0f;
@@ -300,6 +310,7 @@ void FallingState::onEntry(GameActorBase& actor)
 }
 void FallingState::onExit(GameActorBase& actor)
 {
-    actor.setMessage("Exited FallingState\n");
+    if (Config::showStateTransitions)
+        actor.setMessage("Exited FallingState\n");
     actor.m_graphicsComponent.reset();
 }

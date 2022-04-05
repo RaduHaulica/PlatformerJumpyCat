@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "Config.h"
 #include "Input.h"
 #include "Interfaces.h"
 #include "GameObjectBase.h"

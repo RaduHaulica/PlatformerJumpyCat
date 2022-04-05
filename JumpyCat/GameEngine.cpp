@@ -87,7 +87,8 @@ std::vector<Input> GameEngine::collectInput()
     {
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
-            std::cout << name << ": " << "LEFT released\n";
+            if (Config::showControls)
+                std::cout << name << ": " << "LEFT released\n";
             m_keyPressedLeft = false;
             result.control = CONTROLS::RELEASED_LEFT;
             resultsVector.push_back(result);
@@ -95,18 +96,19 @@ std::vector<Input> GameEngine::collectInput()
     }
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-        if (!m_keyPressedLeft) std::cout << name << ": " << "LEFT pressed\n";
+        if (Config::showControls)
+            if (!m_keyPressedLeft) std::cout << name << ": " << "LEFT pressed\n";
 		m_keyPressedLeft = true;
 		result.control = CONTROLS::PRESSED_LEFT;
         resultsVector.push_back(result);
 	}
 
-
     if (m_keyPressedRight)
     {
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            std::cout << name << ": " << "RIGHT released\n";
+            if (Config::showControls)
+                std::cout << name << ": " << "RIGHT released\n";
             m_keyPressedRight = false;
             result.control = CONTROLS::RELEASED_RIGHT;
             resultsVector.push_back(result);
@@ -114,7 +116,8 @@ std::vector<Input> GameEngine::collectInput()
     }
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-        if (!m_keyPressedRight) std::cout << name << ": " << "RIGHT pressed\n";
+        if (Config::showControls)
+            if (!m_keyPressedRight) std::cout << name << ": " << "RIGHT pressed\n";
 		m_keyPressedRight = true;
 		result.control = CONTROLS::PRESSED_RIGHT;
         resultsVector.push_back(result);
@@ -124,7 +127,8 @@ std::vector<Input> GameEngine::collectInput()
     {
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
-            std::cout << name << ": " << "UP released\n";
+            if (Config::showControls)
+                std::cout << name << ": " << "UP released\n";
             m_keyPressedUp = false;
             result.control = CONTROLS::RELEASED_UP;
             resultsVector.push_back(result);
@@ -132,7 +136,8 @@ std::vector<Input> GameEngine::collectInput()
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        if (!m_keyPressedUp) std::cout << name << ": " << "UP pressed\n";
+        if (Config::showControls)
+            if (!m_keyPressedUp) std::cout << name << ": " << "UP pressed\n";
         m_keyPressedUp = true;
         result.control = CONTROLS::PRESSED_UP;
         resultsVector.push_back(result);
@@ -142,7 +147,8 @@ std::vector<Input> GameEngine::collectInput()
     {
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         {
-            std::cout << name << ": " << "DOWN released\n";
+            if (Config::showControls)
+                std::cout << name << ": " << "DOWN released\n";
             m_keyPressedDown = false;
             result.control = CONTROLS::RELEASED_DOWN;
             resultsVector.push_back(result);
@@ -150,7 +156,8 @@ std::vector<Input> GameEngine::collectInput()
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
-        if (!m_keyPressedDown) std::cout << name << ": " << "DOWN pressed\n";
+        if (Config::showControls)
+            if (!m_keyPressedDown) std::cout << name << ": " << "DOWN pressed\n";
         m_keyPressedDown = true;
         result.control = CONTROLS::PRESSED_DOWN;
         resultsVector.push_back(result);

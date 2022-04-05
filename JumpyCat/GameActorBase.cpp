@@ -29,9 +29,6 @@ GameActorBase::GameActorBase(std::string name, sf::Vector2f size) :
 
 void GameActorBase::update(float dt)
 {
-    Input mockInput;
-    mockInput.control = CONTROLS::NOTHING;
-    handleInput(mockInput);
     m_currentState->update(*this, dt);
 
     m_velocity += (m_acceleration * dt);
@@ -41,15 +38,17 @@ void GameActorBase::update(float dt)
     GameObjectBase::update(dt);
     //std::cout << "actor collisions: " << m_collidedWith.size() << "\n";
 
-    auto [x, y] = m_graphicsComponent.getScale();
-    if ((m_facingRight && x < 0) || (!m_facingRight && x > 0))
-    {
-        m_graphicsComponent.setScale({ -x, y });
-    }
-    if (!m_facingRight)
-    {
-        m_graphicsComponent.setPosition({ m_position.x + m_size.x - 25, m_position.y });
-    }
+    // removed this from here as every sprite has its own offset
+    // 
+    //auto [x, y] = m_graphicsComponent.getScale();
+    //if ((m_facingRight && x < 0) || (!m_facingRight && x > 0))
+    //{
+    //    m_graphicsComponent.setScale({ -x, y });
+    //}
+    //if (!m_facingRight)
+    //{
+    //    m_graphicsComponent.setPosition({ m_position.x + m_size.x + 10, m_position.y });
+    //}
 
     m_grounded = false;
     m_touchingLeft = false;
@@ -107,8 +106,11 @@ void GameActorBase::draw(sf::RenderTarget& target, sf::RenderStates states) cons
     target.draw(m_graphicsComponent, states);
     target.draw(m_colliderComponent, states);
 
-    target.draw(m_anchor);
-    target.draw(m_feelers);
+    if (Config::showColliderBoundingBoxes)
+    {
+		target.draw(m_anchor);
+		target.draw(m_feelers);
+    }
 }
 
 void GameActorBase::setPosition(sf::Vector2f position)
