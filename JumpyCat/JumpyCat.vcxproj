@@ -28,6 +28,7 @@
     <ClInclude Include="GameActorEnemy.h" />
     <ClInclude Include="GameActorState.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="GameMessageSystem.h" />
     <ClInclude Include="GameObjectPowerup.h" />
     <ClInclude Include="GameObjectWall.h" />
     <ClInclude Include="GraphicsComponent.h" />
@@ -51,6 +52,7 @@
     <ClCompile Include="GameActorEnemy.cpp" />
     <ClCompile Include="GameActorState.cpp" />
     <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="GameMessageSystem.cpp" />
     <ClCompile Include="GameObjectWall.cpp" />
     <ClCompile Include="GameObjectBase.cpp" />
     <ClCompile Include="HealthBar.cpp" />

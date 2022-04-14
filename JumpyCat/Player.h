@@ -9,9 +9,11 @@
 #include "GameActorBase.h"
 #include "PlayerState.h"
 
-class GameEngine;
 
+class GameEngine;
 class IPlayerState;
+class Subject;
+
 
 class Player : public GameActorBase
 {
@@ -22,9 +24,14 @@ public:
     int m_currentHealth;
     int m_maximumHealth;
     int m_coinsCollected;
+    
+    float m_invulnerabilityDuration;
 
+    bool m_invulnerable;
     bool m_doubleJumpEnabled;
     bool m_doubleJumped;
+
+    Subject* m_notificationSystem;
 
     // methods
 
@@ -39,6 +46,7 @@ public:
     virtual void collideWall(GameObjectBase* collidedObject);
     void collideEnemy(GameObjectBase* collidedObject);
     void collideCollectible(GameObjectBase* collidedObject);
+    void collideTrigger(GameObjectBase* collidedObject);
 
     void initializeState();
     bool isGrounded();

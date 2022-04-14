@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "GameObjectWall.h"
 #include "HealthBar.h"
+#include "GameMessageSystem.h"
 
 class GameObjectFactory
 {
@@ -76,6 +77,32 @@ void createRune(TextureManager& tm, GameEngine& engine, sf::Vector2f position)
 	rune->setPosition(position);
 	rune->m_objectType = GameObjectType::RUNE;
 	engine.addCollectible(rune);
+}
+
+void loadDoorGraphics(TextureManager& tm, GameObjectBase* door)
+{
+	Animation doorAnimation(tm.getTexture("door"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
+	Animation doorAnimationOpen(tm.getTexture("door_open"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
+	door->m_graphicsComponent.addAnimation("closed", doorAnimation, { 0, 0 });
+	door->m_graphicsComponent.addAnimation("open", doorAnimationOpen, { 0, 0 });
+	door->m_graphicsComponent.m_currentAnimation = "closed";
+
+	sf::RectangleShape collider1 = sf::RectangleShape();
+	collider1.setFillColor(sf::Color::Transparent);
+	collider1.setOutlineColor(sf::Color::Red);
+	collider1.setOutlineThickness(1);
+	collider1.setPosition({ 0,0 });
+	collider1.setSize({ 64, 64 });
+	door->m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
+}
+
+void createDoor(TextureManager& tm, GameEngine& engine, sf::Vector2f position)
+{
+	GameObjectBase* door = new GameObjectBase;
+	loadDoorGraphics(tm, door);
+	door->setPosition(position);
+	door->m_objectType = GameObjectType::DOOR;
+	engine.addTrigger(door);
 }
 
 void loadHealthBarGraphics(TextureManager& tm, Player* player, HealthBar* healthBar)
@@ -240,11 +267,8 @@ void loadScenery(TextureManager& textureManager, GameEngine& engine)
 
     // top rising platforms
     createTile(textureManager, engine, { 1300, 400 });
-
     createTile(textureManager, engine, { 1000, 200 });
-
     createTile(textureManager, engine, { 700, 000 });
-
     createTile(textureManager, engine, { 400, -200 });
 
     // right transition platforms
@@ -274,6 +298,10 @@ int main()
     miniMapView.setSize(2 * 1920, 1080);
     miniMapView.setViewport(sf::FloatRect(0.70f, 0.0f, 0.30f, 0.15f));
 
+    sf::View UIView;
+    UIView.setCenter(1920 / 2, 1080 / 2);
+	UIView.setSize(1920, 1080);
+
     TextureManager textureManager;
 
     Player* player = new Player("It's a-me, Mario!", { 120, 100 });
@@ -283,16 +311,30 @@ int main()
     HealthBar* healthBar = new HealthBar({0, 0});
     loadHealthBarGraphics(textureManager, player, healthBar);
 
-    GameActorEnemy* reaper = new GameActorEnemy("Reaper", { 100, 100 });
+    GameActorEnemy* reaper = new GameActorEnemy("Reaper", { 90, 90 });
     loadReaperGraphics(textureManager, reaper);
-    reaper->setPosition({ 700, -398 });
+    reaper->setPosition({ 800, 302 });
 
+	GameActorEnemy* reaper2 = new GameActorEnemy("Reaper_bottom", { 90, 90 });
+    loadReaperGraphics(textureManager, reaper2);
+	reaper2->setPosition({ 600, 802 });
+
+    GameActorEnemy* reaper3 = new GameActorEnemy("Reaper_top", { 90, 90 });
+    loadReaperGraphics(textureManager, reaper3);
+	reaper3->setPosition({ 2200, 802 });
+
+    GameObjectBase* door = new GameObjectBase();
+	loadDoorGraphics(textureManager, door);
+	door->setPosition({ 500, 600 });
 
     GameEngine engine;
     loadScenery(textureManager, engine);
     engine.addPlayer(player);
     engine.addEnemy(reaper);
+	engine.addEnemy(reaper2);
+	engine.addEnemy(reaper3);
     engine.addPlayerHealthBar(healthBar);
+    engine.addTrigger(door);
 
     // COINS
     //GameObjectPowerup* coin = new GameObjectPowerup;
@@ -301,8 +343,10 @@ int main()
     //engine.addCollectible(dynamic_cast<GameObjectPowerup*>(coinFactory.createObject({ 400, 300 })));
     //engine.addCollectible(dynamic_cast<GameObjectPowerup*>(coinFactory.createObject({ 200, 200 })));
 
-    createCoin(textureManager, engine, { 200, 200 });
-    createCoin(textureManager, engine, { 400, 200 });
+    createCoin(textureManager, engine, { 200, 200 }); // top left
+    createCoin(textureManager, engine, { 100, -400 }); // secret topper left
+    createCoin(textureManager, engine, { 2300, 900 }); // bottom double jump
+    createCoin(textureManager, engine, { 400, 800 }); // under spawn
 
     createRune(textureManager, engine, { 2100, 300 });
 
@@ -402,6 +446,7 @@ int main()
         // ===== UPDATE =====
         engine.update(dt);
         AudioManager::update(dt);
+        GameMessageSystem::getInstance().update(dt);
 
         // move camera
         window.setView(mainView);
@@ -445,6 +490,9 @@ int main()
         window.draw(engine);
         window.draw(frame);
 
+        window.setView(UIView);
+        window.draw(GameMessageSystem::getInstance());
+		
         window.display();
     }
 

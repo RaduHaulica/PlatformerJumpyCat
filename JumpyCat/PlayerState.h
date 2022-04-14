@@ -76,6 +76,7 @@ public:
     float m_movementSpeed;
     float m_coyoteTime;
     bool m_coyoteEnabled;
+    float m_fallDistance;
 
     PlayerFallingState(bool coyoteEnabled = false);
     virtual IPlayerState* handleInput(Player& player, Input input);

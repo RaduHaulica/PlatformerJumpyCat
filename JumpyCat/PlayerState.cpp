@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Player.h"
 #include "Utility.h"
+#include "GameMessageSystem.h"
 
 // ===== ===== ===== ===== DUCKING STATE ===== ===== ===== =====
 
@@ -266,9 +267,10 @@ void PlayerJumpingState::onExit(Player& player)
 
 // ===== ===== ===== ===== FALLING STATE ===== ===== ===== =====
 
-PlayerFallingState::PlayerFallingState(bool coyoteEnabled):
+PlayerFallingState::PlayerFallingState(bool coyoteEnabled) :
     m_movementSpeed{ 200.0f },
     m_coyoteTime{ 0.0f },
+    m_fallDistance{ 0.0f },
     m_coyoteEnabled{ coyoteEnabled }
 {}
 
@@ -330,10 +332,16 @@ void PlayerFallingState::onEntry(Player& player)
     player.m_currentStateName = "falling";
     player.m_grounded = false;
     player.m_platform = nullptr;
+	
+    m_fallDistance = player.m_position.y;
 }
 void PlayerFallingState::onExit(Player& player)
 {
+	
     if (Config::showStateTransitions)
         player.setMessage("Exited FallingState\n");
     player.m_graphicsComponent.reset();
+    
+    if (player.m_position.y - m_fallDistance > 500.0f)
+        player.m_notificationSystem->notify(player, Event::FELL_FROM_HEIGHT);
 }

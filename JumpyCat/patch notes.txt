@@ -35,22 +35,24 @@ fixed sound memory leak, pointers are kept alive while they play on a different 
 0.8
 enemy + state;
 
-0.9 - latest release
+0.9
 fixed enemy animation;
 enemy movement seems ok;
 double jump + rune power up;
 mock input for enemy state transition;
 "global" config for feature flags;
 
-0.10 - current & WIP
+0.10 - latest release
+fixed bug - falling through platforms;
+invulnerability after getting hit by enemies;
 collectible placement;
-end game;
-starting observer for achievements?
+observer pattern for game events + achievements - UI;
+still working on message system graphics;
+
+0.11 - WIP
+menu, game over etc.
+
 
 next:
-make sound classes actual singletons;
-game object factory;
 player damage state (movement, animation);
-enemy damage state (movement, animation);
-half jumping state? would work with enemy boop;
 camera class + camera on a spring?

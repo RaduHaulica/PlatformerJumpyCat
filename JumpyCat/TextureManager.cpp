@@ -11,6 +11,7 @@ TextureManager::~TextureManager()
     {
         delete texture;
     }
+    delete m_font;
 }
 
 sf::Texture* TextureManager::getTexture(std::string name)
@@ -19,7 +20,12 @@ sf::Texture* TextureManager::getTexture(std::string name)
 }
 
 void TextureManager::initialize()
-{
+{	
+    // Load font
+	m_font = new sf::Font();
+    m_font->loadFromFile("./assets/Roboto-Bold.ttf");
+
+	// Load textures
     std::string basePath = "./assets/graphics/";
 
     sf::Texture* backgroundTex = new sf::Texture();
@@ -105,4 +111,24 @@ void TextureManager::initialize()
     sf::Texture* reaperDyingTex = new sf::Texture();
     reaperDyingTex->loadFromFile(basePath + "character_reaper_dying_spritesheet.png");
     m_textures.insert(std::pair<std::string, sf::Texture*>("reaper_dying", reaperDyingTex));
+
+	// door
+
+	sf::Texture* doorClosedTex = new sf::Texture();
+	doorClosedTex->loadFromFile(basePath + "door.png");
+	m_textures.insert(std::pair<std::string, sf::Texture*>("door", doorClosedTex));
+
+	sf::Texture* doorOpenTex = new sf::Texture();
+	doorOpenTex->loadFromFile(basePath + "door_open.png");
+	m_textures.insert(std::pair<std::string, sf::Texture*>("door_open", doorOpenTex));
+	
+	// messages
+	
+	sf::Texture* messageTex = new sf::Texture();
+	messageTex->loadFromFile(basePath + "ribbon_message.png");
+	m_textures.insert(std::pair<std::string, sf::Texture*>("message", messageTex));
+
+	sf::Texture* messageStarTex = new sf::Texture();
+	messageStarTex->loadFromFile(basePath + "ribbon_star.png");
+	m_textures.insert(std::pair<std::string, sf::Texture*>("message_star", messageStarTex));
 }

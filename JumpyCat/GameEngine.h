@@ -36,8 +36,12 @@ public:
     void addEnemy(GameActorEnemy* newEnemy);
     void addCollectible(GameObjectPowerup* newCollectible);
     void addScenery(Scenery* newScenery);
+    void addTrigger(GameObjectBase* newTrigger);
     void addPlayerHealthBar(HealthBar* hpBar);
     bool gameOver();
+    void openDoor();
+    bool isDoorOpen();
+    void victory();
 
 private:
     float m_frameRate;
@@ -45,6 +49,8 @@ private:
     float m_frameTimeAccumulator;
 
     bool m_gameEnded;
+    bool m_doorOpen;
+    bool m_victory;
 
     bool m_keyPressedDown;
     bool m_keyPressedUp;
@@ -56,5 +62,6 @@ private:
     std::vector<GameActorEnemy*> m_enemyEntities;
     std::vector<Player*> m_playerEntities;
     std::vector<Scenery*> m_sceneryEntities;
+    std::vector<GameObjectBase*> m_triggerEntities;
     HealthBar* m_playerHealthBar;
 };

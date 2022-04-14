@@ -9,7 +9,8 @@ GameEngine::GameEngine() :
     m_keyPressedUp{ false },
     m_frameRate{ 60.0f },
     m_frameTimeAccumulator{ 0.0f },
-    m_gameEnded{ false }
+    m_gameEnded{ false },
+	m_doorOpen{ false }
 {
     m_frameTime = 1 / m_frameRate;
 }
@@ -26,6 +27,8 @@ GameEngine::~GameEngine()
         delete m_enemyEntities[i];
     for (int i = 0; i < m_collectibleEntities.size(); i++)
         delete m_collectibleEntities[i];
+	for (int i=0; i<m_triggerEntities.size(); i++)
+		delete m_triggerEntities[i];
 
 }
 
@@ -44,6 +47,8 @@ void GameEngine::update(float dt)
             enemy->update(m_frameTime);
 		for (auto& wall : m_gameWallEntities)
             wall->update(m_frameTime);
+        for (auto& trigger : m_triggerEntities)
+			trigger->update(m_frameTime);
 
 		// collisions
 		checkCollisions();
@@ -234,6 +239,20 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
         }
     }
 
+    // players hitting triggers
+    for (int i = 0; i < m_playerEntities.size(); i++)
+    {
+        for (int j = 0; j < m_triggerEntities.size(); j++)
+        {
+            if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[0], m_triggerEntities[j]->m_colliderComponent.m_colliders[0]))
+            {
+				results.push_back({ m_playerEntities[i], m_triggerEntities[j] });
+				m_playerEntities[i]->collide(m_triggerEntities[j]);
+				m_triggerEntities[j]->collide(m_playerEntities[i]);
+            }
+        }
+    }
+
     // monsters running into walls
     for (int i = 0; i < m_enemyEntities.size(); i++)
     {
@@ -289,6 +308,11 @@ void GameEngine::addScenery(Scenery* newScenery)
     m_sceneryEntities.push_back(newScenery);
 }
 
+void GameEngine::addTrigger(GameObjectBase* newTrigger)
+{
+    m_triggerEntities.push_back(newTrigger);
+}
+
 void GameEngine::addPlayerHealthBar(HealthBar* hpBar)
 {
     m_playerHealthBar = hpBar;
@@ -297,4 +321,20 @@ void GameEngine::addPlayerHealthBar(HealthBar* hpBar)
 bool GameEngine::gameOver()
 {
     return m_gameEnded;
+}
+
+void GameEngine::openDoor()
+{
+	m_doorOpen = true;
+    m_triggerEntities[0]->m_graphicsComponent.changeAnimation("open");
+}
+
+bool GameEngine::isDoorOpen()
+{
+    return m_doorOpen;
+}
+
+void GameEngine::victory()
+{
+	m_victory = true;
 }

@@ -23,7 +23,8 @@ static enum class GameObjectType
 	PLAYER,
 	ENEMY,
 	COIN,
-	RUNE
+	RUNE,
+	DOOR
 };
 
 struct PlayMessage

@@ -1,6 +1,7 @@
 #include "Player.h"
 
 #include "GameEngine.h"
+#include "GameMessageSystem.h"
 
 Player::Player(std::string name, sf::Vector2f size) :
     GameActorBase(name, size),
@@ -8,9 +9,15 @@ Player::Player(std::string name, sf::Vector2f size) :
     m_maximumHealth{ 3 },
     m_coinsCollected{ 0 },
 	m_doubleJumpEnabled{ false },
-    m_doubleJumped{ false }
+    m_doubleJumped{ false },
+    m_invulnerable{ false },
+    m_invulnerabilityDuration{ 0.0f }
 {
     m_objectType = GameObjectType::PLAYER;
+
+    m_notificationSystem = new Subject();
+    m_notificationSystem->registerObserver(new AchievementObserver());
+    m_notificationSystem->registerObserver(new GameStateObserver());
 }
 
 void Player::update(float dt)
@@ -40,7 +47,14 @@ void Player::update(float dt)
 
     initializeFeelers();
 
-    if (m_currentHealth <= 0)
+    if (m_invulnerabilityDuration > 0.0f)
+    {
+		m_invulnerabilityDuration = std::max(0.0f, m_invulnerabilityDuration - dt);
+    }
+	if (m_invulnerabilityDuration == 0.0f)
+		m_invulnerable = false;
+
+    if (m_currentHealth <= 0 || m_position.y > 1200)
         m_dead = true;
 }
 
@@ -150,8 +164,8 @@ void Player::collideWall(GameObjectBase* collidedObject)
     sf::RectangleShape r2 = m_colliderComponent.m_colliders[0];
     sf::Vector2f position = r2.getPosition();
 
-    float thresholdX = r1.getSize().x/10;
-    float thresholdY = r1.getSize().y/10;
+    float thresholdX = r1.getSize().x/5;
+    float thresholdY = r1.getSize().y/5;
 
     if (std::fabs(r1.getPosition().x - r2.getPosition().x - r2.getSize().x) < thresholdX)
     {
@@ -204,6 +218,8 @@ void Player::collideCollectible(GameObjectBase* collidedObject)
     {
 		m_coinsCollected++;
 
+        m_notificationSystem->notify(*this, Event::COINS_COLLECTED);
+
 		SoundId coinSound;
 		coinSound.m_name = "coin_collected";
 		AudioManager::playSound(coinSound);
@@ -211,6 +227,8 @@ void Player::collideCollectible(GameObjectBase* collidedObject)
     else if (collidedObject->m_objectType == GameObjectType::RUNE)
     {
         m_doubleJumpEnabled = true;
+
+        m_notificationSystem->notify(*this, Event::RUNE_COLLECTED);
 		
 		SoundId runeSound;
 		runeSound.m_name = "rune_collected";
@@ -220,7 +238,30 @@ void Player::collideCollectible(GameObjectBase* collidedObject)
     return;
 }
 
+void Player::collideTrigger(GameObjectBase* collidedObject)
+{
+    if (m_parentGameEngine->isDoorOpen())
+    {
+        m_parentGameEngine->victory();
+    }
+}
+
 void Player::onEntry(GameObjectBase* collidedObject)
 {
-    m_currentHealth -= 1;
+    if (collidedObject->m_objectType == GameObjectType::ENEMY)
+    {
+		if (!m_invulnerable)
+		{
+			m_currentHealth -= 1;
+			m_velocity.x -= 500;
+			m_velocity.y -= 500;
+
+			m_invulnerable = true;
+			m_invulnerabilityDuration = 1.0f;
+
+			SoundId runeSound;
+			runeSound.m_name = "rune_collected";
+			AudioManager::playSound(runeSound);
+		}
+    }
 }
