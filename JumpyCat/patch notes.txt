@@ -42,17 +42,20 @@ double jump + rune power up;
 mock input for enemy state transition;
 "global" config for feature flags;
 
-0.10 - latest release
+0.10
 fixed bug - falling through platforms;
 invulnerability after getting hit by enemies;
 collectible placement;
 observer pattern for game events + achievements - UI;
 still working on message system graphics;
 
-0.11 - WIP
-menu, game over etc.
+0.11 - latest release
+all entities in engine are unique pointers now;
+
+0.12 - WIP
+FSM for menu, game over etc.
 
 
 next:
-player damage state (movement, animation);
+player damage state (movement, animation)?
 camera class + camera on a spring?

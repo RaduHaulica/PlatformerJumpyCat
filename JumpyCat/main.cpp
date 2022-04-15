@@ -31,11 +31,11 @@ public:
     }
 };
 
-void loadCoinGraphics(TextureManager& tm, GameObjectBase* coin)
+void loadCoinGraphics(TextureManager& tm, GameObjectBase& coin)
 {
     Animation coinAnimation(tm.getTexture("coin"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
-    coin->m_graphicsComponent.addAnimation("standing", coinAnimation, { 0, 0 });
-    coin->m_graphicsComponent.m_currentAnimation = "standing";
+    coin.m_graphicsComponent.addAnimation("standing", coinAnimation, { 0, 0 });
+    coin.m_graphicsComponent.m_currentAnimation = "standing";
 
     sf::RectangleShape collider1 = sf::RectangleShape();
     collider1.setFillColor(sf::Color::Transparent);
@@ -43,23 +43,23 @@ void loadCoinGraphics(TextureManager& tm, GameObjectBase* coin)
     collider1.setOutlineThickness(1);
     collider1.setPosition({ 0,0 });
     collider1.setSize({ 64, 64 });
-    coin->m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
+    coin.m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
 }
 
 void createCoin(TextureManager& tm, GameEngine& engine, sf::Vector2f position)
 {
-    GameObjectPowerup* coin = new GameObjectPowerup;
-    loadCoinGraphics(tm, coin);
+    std::unique_ptr<GameObjectPowerup> coin = std::make_unique<GameObjectPowerup>();
+    loadCoinGraphics(tm, *coin);
     coin->setPosition(position);
     coin->m_objectType = GameObjectType::COIN;
-    engine.addCollectible(coin);
+    engine.addCollectible(std::move(coin));
 }
 
-void loadRuneGraphics(TextureManager& tm, GameObjectBase* rune)
+void loadRuneGraphics(TextureManager& tm, GameObjectBase& rune)
 {
 	Animation runeAnimation(tm.getTexture("rune"), 1, { 56, 93 }, { 32, 48 }, 0.0f, false);
-	rune->m_graphicsComponent.addAnimation("standing", runeAnimation, { 0, 0 });
-	rune->m_graphicsComponent.m_currentAnimation = "standing";
+	rune.m_graphicsComponent.addAnimation("standing", runeAnimation, { 0, 0 });
+	rune.m_graphicsComponent.m_currentAnimation = "standing";
 
 	sf::RectangleShape collider1 = sf::RectangleShape();
 	collider1.setFillColor(sf::Color::Transparent);
@@ -67,25 +67,25 @@ void loadRuneGraphics(TextureManager& tm, GameObjectBase* rune)
 	collider1.setOutlineThickness(1);
 	collider1.setPosition({ 0,0 });
 	collider1.setSize({ 32, 48 });
-	rune->m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
+	rune.m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
 }
 
 void createRune(TextureManager& tm, GameEngine& engine, sf::Vector2f position)
 {
-	GameObjectPowerup* rune = new GameObjectPowerup;
-	loadRuneGraphics(tm, rune);
+	std::unique_ptr<GameObjectPowerup> rune = std::make_unique<GameObjectPowerup>();
+	loadRuneGraphics(tm, *rune);
 	rune->setPosition(position);
 	rune->m_objectType = GameObjectType::RUNE;
-	engine.addCollectible(rune);
+	engine.addCollectible(std::move(rune));
 }
 
-void loadDoorGraphics(TextureManager& tm, GameObjectBase* door)
+void loadDoorGraphics(TextureManager& tm, GameObjectBase& door)
 {
 	Animation doorAnimation(tm.getTexture("door"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
 	Animation doorAnimationOpen(tm.getTexture("door_open"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
-	door->m_graphicsComponent.addAnimation("closed", doorAnimation, { 0, 0 });
-	door->m_graphicsComponent.addAnimation("open", doorAnimationOpen, { 0, 0 });
-	door->m_graphicsComponent.m_currentAnimation = "closed";
+	door.m_graphicsComponent.addAnimation("closed", doorAnimation, { 0, 0 });
+	door.m_graphicsComponent.addAnimation("open", doorAnimationOpen, { 0, 0 });
+	door.m_graphicsComponent.m_currentAnimation = "closed";
 
 	sf::RectangleShape collider1 = sf::RectangleShape();
 	collider1.setFillColor(sf::Color::Transparent);
@@ -93,43 +93,43 @@ void loadDoorGraphics(TextureManager& tm, GameObjectBase* door)
 	collider1.setOutlineThickness(1);
 	collider1.setPosition({ 0,0 });
 	collider1.setSize({ 64, 64 });
-	door->m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
+	door.m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
 }
 
 void createDoor(TextureManager& tm, GameEngine& engine, sf::Vector2f position)
 {
-	GameObjectBase* door = new GameObjectBase;
-	loadDoorGraphics(tm, door);
+	std::unique_ptr<GameObjectBase> door = std::make_unique<GameObjectBase>();
+	loadDoorGraphics(tm, *door);
 	door->setPosition(position);
 	door->m_objectType = GameObjectType::DOOR;
-	engine.addTrigger(door);
+	engine.addTrigger(std::move(door));
 }
 
-void loadHealthBarGraphics(TextureManager& tm, Player* player, HealthBar* healthBar)
+void loadHealthBarGraphics(TextureManager& tm, Player& player, HealthBar& healthBar)
 {
     Animation coinAnimation(tm.getTexture("coin"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
-    healthBar->m_graphicsComponent.addAnimation("standing", coinAnimation, { 0, 0 });
-    healthBar->m_graphicsComponent.m_currentAnimation = "standing";
+    healthBar.m_graphicsComponent.addAnimation("standing", coinAnimation, { 0, 0 });
+    healthBar.m_graphicsComponent.m_currentAnimation = "standing";
 
     Animation heartAnimation(tm.getTexture("heart"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
     Animation heartEmptyAnimation(tm.getTexture("heartEmpty"), 1, { 128, 128 }, { 64, 64 }, 0.0f, false);
 
-    healthBar->setPosition({ 0, 0 });
-    healthBar->synchronize(player);
+    healthBar.setPosition({ 0, 0 });
+    healthBar.synchronize(player);
 
-    for (int i = 0; i < healthBar->m_maximumHealth; i++)
+    for (int i = 0; i < healthBar.m_maximumHealth; i++)
     {
-		healthBar->m_graphicsComponents[i].addAnimation("empty", heartEmptyAnimation, {0, 0});
-        healthBar->m_graphicsComponents[i].m_currentAnimation = "empty";
-        healthBar->m_graphicsComponents[i].setPosition({ (float)i * 64, 0 });
+		healthBar.m_graphicsComponents[i].addAnimation("empty", heartEmptyAnimation, {0, 0});
+        healthBar.m_graphicsComponents[i].m_currentAnimation = "empty";
+        healthBar.m_graphicsComponents[i].setPosition({ (float)i * 64, 0 });
 
-		healthBar->m_graphicsComponents[i].addAnimation("full", heartAnimation, {0, 0});
-        healthBar->m_graphicsComponents[i].m_currentAnimation = "full";
-        healthBar->m_graphicsComponents[i].setPosition({ (float)i * 64, 0 });
+		healthBar.m_graphicsComponents[i].addAnimation("full", heartAnimation, {0, 0});
+        healthBar.m_graphicsComponents[i].m_currentAnimation = "full";
+        healthBar.m_graphicsComponents[i].setPosition({ (float)i * 64, 0 });
     }
 }
 
-void loadPlayerGraphics(TextureManager& tm, Player* player)
+void loadPlayerGraphics(TextureManager& tm, Player& player)
 {
     float sizeX{ 100 }, sizeY{ 90 };
     float texSizeX{ 542 }, texSizeY{ 474 };
@@ -141,15 +141,15 @@ void loadPlayerGraphics(TextureManager& tm, Player* player)
     Animation hurtingAnimation(tm.getTexture("cat_hurting"), 10, { texSizeX, texSizeY }, { sizeX, sizeY }, 0.5f, false);
     Animation dyingAnimation(tm.getTexture("cat_dying"), 10, { texSizeX, texSizeY }, { sizeX, sizeY }, 0.5f, false);
 
-    player->m_graphicsComponent.addAnimation("standing", standingAnimation, {-25, 0});
-    player->m_graphicsComponent.addAnimation("jumping", jumpingAnimation, { -25, 0 });
-    player->m_graphicsComponent.addAnimation("moving", movingAnimation, { -25, 0 });
-    player->m_graphicsComponent.addAnimation("ducking", duckingAnimation, { -25, 0 });
-    player->m_graphicsComponent.addAnimation("falling", fallingAnimation, { -25, 0 });
-    player->m_graphicsComponent.addAnimation("hurting", hurtingAnimation, { -25, 0 });
-    player->m_graphicsComponent.addAnimation("dying", dyingAnimation, { -25, 0 });
+    player.m_graphicsComponent.addAnimation("standing", standingAnimation, {-25, 0});
+    player.m_graphicsComponent.addAnimation("jumping", jumpingAnimation, { -25, 0 });
+    player.m_graphicsComponent.addAnimation("moving", movingAnimation, { -25, 0 });
+    player.m_graphicsComponent.addAnimation("ducking", duckingAnimation, { -25, 0 });
+    player.m_graphicsComponent.addAnimation("falling", fallingAnimation, { -25, 0 });
+    player.m_graphicsComponent.addAnimation("hurting", hurtingAnimation, { -25, 0 });
+    player.m_graphicsComponent.addAnimation("dying", dyingAnimation, { -25, 0 });
 
-    player->initializeState();
+    player.initializeState();
 
     sf::RectangleShape collider1 = sf::RectangleShape();
     collider1.setFillColor(sf::Color::Transparent);
@@ -157,12 +157,12 @@ void loadPlayerGraphics(TextureManager& tm, Player* player)
     collider1.setOutlineThickness(1);
     collider1.setPosition(sf::Vector2f({ 400.0f, 250.0f }));
     collider1.setSize({ 50, 90 });
-    player->m_colliderComponent.addColliders({ collider1 }, { {0,0} });
+    player.m_colliderComponent.addColliders({ collider1 }, { {0,0} });
 
-    player->initializeFeelers();
+    player.initializeFeelers();
 }
 
-void loadReaperGraphics(TextureManager& tm, GameActorBase* reaper)
+void loadReaperGraphics(TextureManager& tm, GameActorBase& reaper)
 {
     float sizeX{ 100 }, sizeY{ 90 };
     float texSizeX{ 900 }, texSizeY{ 900 };
@@ -173,14 +173,14 @@ void loadReaperGraphics(TextureManager& tm, GameActorBase* reaper)
     Animation hurtingAnimation(tm.getTexture("reaper_hurting"), 11, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
     Animation dyingAnimation(tm.getTexture("reaper_dying"), 11, { texSizeX, texSizeY }, { sizeX, sizeY }, 1.0f, false);
 
-    reaper->m_graphicsComponent.addAnimation("moving", walkingAnimation, { -25, 0 });
-    reaper->m_graphicsComponent.addAnimation("standing", standingAnimation, { -25, 0 });
-    reaper->m_graphicsComponent.addAnimation("jumping", standingAnimation, { -25, 0 });
-    reaper->m_graphicsComponent.addAnimation("falling", fallingAnimation, { -25, 0 });
-    reaper->m_graphicsComponent.addAnimation("hurting", hurtingAnimation, { -25, 0 });
-    reaper->m_graphicsComponent.addAnimation("dying", dyingAnimation, { -25, 0 });
+    reaper.m_graphicsComponent.addAnimation("moving", walkingAnimation, { -25, 0 });
+    reaper.m_graphicsComponent.addAnimation("standing", standingAnimation, { -25, 0 });
+    reaper.m_graphicsComponent.addAnimation("jumping", standingAnimation, { -25, 0 });
+    reaper.m_graphicsComponent.addAnimation("falling", fallingAnimation, { -25, 0 });
+    reaper.m_graphicsComponent.addAnimation("hurting", hurtingAnimation, { -25, 0 });
+    reaper.m_graphicsComponent.addAnimation("dying", dyingAnimation, { -25, 0 });
 
-    reaper->initializeState();
+    reaper.initializeState();
 
     sf::RectangleShape collider1 = sf::RectangleShape();
     collider1.setFillColor(sf::Color::Transparent);
@@ -188,14 +188,14 @@ void loadReaperGraphics(TextureManager& tm, GameActorBase* reaper)
     collider1.setOutlineThickness(1);
     collider1.setPosition(sf::Vector2f({ 400.0f, 250.0f }));
     collider1.setSize({ 50, 90 });
-    reaper->m_colliderComponent.addColliders({ collider1 }, { {0,0} });
+    reaper.m_colliderComponent.addColliders({ collider1 }, { {0,0} });
 
-    reaper->initializeFeelers();
+    reaper.initializeFeelers();
 }
 
 void createTile(TextureManager& textureManager, GameEngine& engine, sf::Vector2f position)
 {
-    GameObjectWall* tile = new GameObjectWall();
+    std::unique_ptr<GameObjectWall> tile = std::make_unique<GameObjectWall>();
     Animation tileAnimation(textureManager.getTexture("tile"), 1, { 128, 128 }, { 100, 100 }, 0.0f, false);
     tile->m_graphicsComponent.addAnimation("tile", tileAnimation, { 0, 0 });
     tile->m_graphicsComponent.m_currentAnimation = "tile";
@@ -208,17 +208,17 @@ void createTile(TextureManager& textureManager, GameEngine& engine, sf::Vector2f
     collider1.setSize({ 100, 100 });
     tile->m_colliderComponent.addColliders({ collider1 }, { {0, 0} });
     tile->setPosition(position);
-    engine.addWallEntity(tile);
+    engine.addWallEntity(std::move(tile));
 }
 
 void createBackground(TextureManager& textureManager, GameEngine& engine, sf::Vector2f position)
 {
-    Scenery* background = new Scenery();
+    std::unique_ptr<Scenery> background = std::make_unique<Scenery>();
     Animation backgroundAnimation(textureManager.getTexture("background"), 1, { 1000, 800 }, { 1920, 1080 }, 0.0f, false);
     background->m_graphicsComponent.addAnimation("background", backgroundAnimation, { 0, 0 });
     background->m_graphicsComponent.m_currentAnimation = "background";
     background->m_graphicsComponent.m_animations["background"].m_animationFrames[0].setPosition(position);
-    engine.addScenery(background);
+    engine.addScenery(std::move(background));
 }
 
 void loadScenery(TextureManager& textureManager, GameEngine& engine)
@@ -304,37 +304,37 @@ int main()
 
     TextureManager textureManager;
 
-    Player* player = new Player("It's a-me, Mario!", { 120, 100 });
-    loadPlayerGraphics(textureManager, player);
+    std::unique_ptr<Player> player = std::make_unique<Player>(std::string("It's a-me, Mario!"), sf::Vector2f({ 120, 100 }));
+    loadPlayerGraphics(textureManager, *player);
     player->setPosition({ 400, 400 });
 
-    HealthBar* healthBar = new HealthBar({0, 0});
-    loadHealthBarGraphics(textureManager, player, healthBar);
+    std::unique_ptr<HealthBar> healthBar = std::make_unique<HealthBar>(sf::Vector2f({0, 0}));
+    loadHealthBarGraphics(textureManager, *player, *healthBar);
 
-    GameActorEnemy* reaper = new GameActorEnemy("Reaper", { 90, 90 });
-    loadReaperGraphics(textureManager, reaper);
+    std::unique_ptr<GameActorEnemy> reaper = std::make_unique<GameActorEnemy>(std::string("Reaper"), sf::Vector2f({ 90, 90 }));
+    loadReaperGraphics(textureManager, *reaper);
     reaper->setPosition({ 800, 302 });
 
-	GameActorEnemy* reaper2 = new GameActorEnemy("Reaper_bottom", { 90, 90 });
-    loadReaperGraphics(textureManager, reaper2);
+	std::unique_ptr<GameActorEnemy> reaper2 = std::make_unique<GameActorEnemy>(std::string("Reaper_bottom"), sf::Vector2f({ 90, 90 }));
+    loadReaperGraphics(textureManager, *reaper2);
 	reaper2->setPosition({ 600, 802 });
 
-    GameActorEnemy* reaper3 = new GameActorEnemy("Reaper_top", { 90, 90 });
-    loadReaperGraphics(textureManager, reaper3);
+    std::unique_ptr<GameActorEnemy> reaper3 = std::make_unique<GameActorEnemy>(std::string("Reaper_top"), sf::Vector2f({ 90, 90 }));
+    loadReaperGraphics(textureManager, *reaper3);
 	reaper3->setPosition({ 2200, 802 });
 
-    GameObjectBase* door = new GameObjectBase();
-	loadDoorGraphics(textureManager, door);
+    std::unique_ptr<GameObjectBase> door = std::make_unique<GameObjectBase>();
+	loadDoorGraphics(textureManager, *door);
 	door->setPosition({ 500, 600 });
 
     GameEngine engine;
     loadScenery(textureManager, engine);
-    engine.addPlayer(player);
-    engine.addEnemy(reaper);
-	engine.addEnemy(reaper2);
-	engine.addEnemy(reaper3);
-    engine.addPlayerHealthBar(healthBar);
-    engine.addTrigger(door);
+    engine.addPlayer(std::move(player));
+    engine.addEnemy(std::move(reaper));
+	engine.addEnemy(std::move(reaper2));
+	engine.addEnemy(std::move(reaper3));
+    engine.addPlayerHealthBar(std::move(healthBar));
+    engine.addTrigger(std::move(door));
 
     // COINS
     //GameObjectPowerup* coin = new GameObjectPowerup;
@@ -475,7 +475,7 @@ int main()
         if (playerPosition.y > 5 * height / 6 - 100)
             mainView.move(sf::Vector2f({ 0,height / 20 }) * dt * 15.0f);
 
-        healthBar->setPosition(mainView.getCenter() - mainView.getSize() / 2.2f);
+        engine.m_playerHealthBar->setPosition(mainView.getCenter() - mainView.getSize() / 2.2f);
 
         // ===== DRAW =====
         window.clear();

@@ -29,19 +29,21 @@ public:
     std::vector<std::pair<GameObjectBase*, GameObjectBase*>> checkCollisions();
 
     std::vector<Input> collectInput();
-    void addPlayer(Player* newPlayer);
+    void addPlayer(std::unique_ptr<Player> newPlayer);
     sf::Vector2f getPlayerPosition();
-    void addWallEntity(GameObjectWall* newEntity);
+    void addWallEntity(std::unique_ptr<GameObjectWall> newEntity);
     std::vector<GameObjectWall*> getWalls();
-    void addEnemy(GameActorEnemy* newEnemy);
-    void addCollectible(GameObjectPowerup* newCollectible);
-    void addScenery(Scenery* newScenery);
-    void addTrigger(GameObjectBase* newTrigger);
-    void addPlayerHealthBar(HealthBar* hpBar);
+    void addEnemy(std::unique_ptr<GameActorEnemy> newEnemy);
+    void addCollectible(std::unique_ptr<GameObjectPowerup> newCollectible);
+    void addScenery(std::unique_ptr<Scenery> newScenery);
+    void addTrigger(std::unique_ptr<GameObjectBase> newTrigger);
+    void addPlayerHealthBar(std::unique_ptr<HealthBar> hpBar);
     bool gameOver();
     void openDoor();
     bool isDoorOpen();
     void victory();
+	
+    std::unique_ptr<HealthBar> m_playerHealthBar;
 
 private:
     float m_frameRate;
@@ -57,11 +59,10 @@ private:
     bool m_keyPressedLeft;
     bool m_keyPressedRight;
 
-    std::vector<GameObjectWall*> m_gameWallEntities;
-    std::vector<GameObjectPowerup*> m_collectibleEntities;
-    std::vector<GameActorEnemy*> m_enemyEntities;
-    std::vector<Player*> m_playerEntities;
-    std::vector<Scenery*> m_sceneryEntities;
-    std::vector<GameObjectBase*> m_triggerEntities;
-    HealthBar* m_playerHealthBar;
+    std::vector<std::unique_ptr<GameObjectWall>> m_gameWallEntities;
+    std::vector< std::unique_ptr<GameObjectPowerup>> m_collectibleEntities;
+    std::vector< std::unique_ptr<GameActorEnemy>> m_enemyEntities;
+    std::vector< std::unique_ptr<Player>> m_playerEntities;
+    std::vector< std::unique_ptr<Scenery>> m_sceneryEntities;
+    std::vector< std::unique_ptr<GameObjectBase>> m_triggerEntities;
 };

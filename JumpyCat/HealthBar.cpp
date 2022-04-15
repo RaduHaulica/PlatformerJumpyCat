@@ -28,11 +28,11 @@ void HealthBar::update(float dt)
 	}
 }
 
-void HealthBar::synchronize(Player* player)
+void HealthBar::synchronize(Player& player)
 {
-	m_parentPlayer = player;
-	m_currentHealth = player->m_currentHealth;
-	m_maximumHealth = player->m_maximumHealth;
+	m_parentPlayer = &player;
+	m_currentHealth = player.m_currentHealth;
+	m_maximumHealth = player.m_maximumHealth;
 
 	m_graphicsComponents.clear();
 	for (int i = 0; i < m_maximumHealth; i++)

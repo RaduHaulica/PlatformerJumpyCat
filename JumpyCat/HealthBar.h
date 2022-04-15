@@ -19,7 +19,7 @@ public:
 	HealthBar(sf::Vector2f newPosition);
 
 	void update(float dt);
-	void synchronize(Player* player);
+	void synchronize(Player& player);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void setPosition(sf::Vector2f newPosition);
 };

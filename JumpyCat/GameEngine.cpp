@@ -16,21 +16,7 @@ GameEngine::GameEngine() :
 }
 
 GameEngine::~GameEngine()
-{
-    for (int i = 0; i < m_sceneryEntities.size(); i++)
-        delete m_sceneryEntities[i];
-    for (int i = 0; i < m_gameWallEntities.size(); i++)
-        delete m_gameWallEntities[i];
-    for (int i = 0; i < m_playerEntities.size(); i++)
-        delete m_playerEntities[i];
-    for (int i = 0; i < m_enemyEntities.size(); i++)
-        delete m_enemyEntities[i];
-    for (int i = 0; i < m_collectibleEntities.size(); i++)
-        delete m_collectibleEntities[i];
-	for (int i=0; i<m_triggerEntities.size(); i++)
-		delete m_triggerEntities[i];
-
-}
+{}
 
 void GameEngine::update(float dt)
 {
@@ -203,8 +189,9 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
                 {
                     if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[k], m_gameWallEntities[j]->m_colliderComponent.m_colliders[l]))
                     {
-                        static_cast<Player*>(m_playerEntities[i])->collideWall(m_gameWallEntities[j]);
-                        m_gameWallEntities[j]->collide(m_playerEntities[i]);
+                        //static_cast<Player*>(m_playerEntities[i])->collideWall(m_gameWallEntities[j]);
+                        m_playerEntities[i]->collideWall(m_gameWallEntities[j].get());
+                        m_gameWallEntities[j]->collide(m_playerEntities[i].get());
                     }
                 }
             }
@@ -218,9 +205,9 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
         {
             if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[0], m_collectibleEntities[j]->m_colliderComponent.m_colliders[0]))
             {
-                results.push_back({m_playerEntities[i], m_collectibleEntities[j]});
-                m_playerEntities[i]->collideCollectible(m_collectibleEntities[j]);
-                m_collectibleEntities[j]->collide(m_playerEntities[i]);
+                //results.push_back({m_playerEntities[i].get(), m_collectibleEntities[j].get()});
+                m_playerEntities[i]->collideCollectible(m_collectibleEntities[j].get());
+                m_collectibleEntities[j]->collide(m_playerEntities[i].get());
             }
         }
     }
@@ -232,9 +219,9 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
         {
             if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[0], m_enemyEntities[j]->m_colliderComponent.m_colliders[0]))
             {
-                results.push_back({ m_playerEntities[i], m_enemyEntities[j] });
-                m_playerEntities[i]->collideEnemy(m_enemyEntities[j]);
-                m_enemyEntities[j]->collide(m_playerEntities[i]);
+                //results.push_back({ m_playerEntities[i].get(), m_enemyEntities[j].get()});
+                m_playerEntities[i]->collideEnemy(m_enemyEntities[j].get());
+                m_enemyEntities[j]->collide(m_playerEntities[i].get());
             }
         }
     }
@@ -246,9 +233,9 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
         {
             if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[0], m_triggerEntities[j]->m_colliderComponent.m_colliders[0]))
             {
-				results.push_back({ m_playerEntities[i], m_triggerEntities[j] });
-				m_playerEntities[i]->collide(m_triggerEntities[j]);
-				m_triggerEntities[j]->collide(m_playerEntities[i]);
+				//results.push_back({ m_playerEntities[i].get(), m_triggerEntities[j].get()});
+				m_playerEntities[i]->collide(m_triggerEntities[j].get());
+				m_triggerEntities[j]->collide(m_playerEntities[i].get());
             }
         }
     }
@@ -260,9 +247,9 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
         {
             if (checkRectangleCollision(m_enemyEntities[i]->m_colliderComponent.m_colliders[0], m_gameWallEntities[j]->m_colliderComponent.m_colliders[0]))
             {
-                results.push_back({m_enemyEntities[i], m_gameWallEntities[j]});
-                m_enemyEntities[i]->collideWall(m_gameWallEntities[j]);
-                m_gameWallEntities[j]->collide(m_enemyEntities[i]);
+                //results.push_back({m_enemyEntities[i].get(), m_gameWallEntities[j].get()});
+                m_enemyEntities[i]->collideWall(m_gameWallEntities[j].get());
+                m_gameWallEntities[j]->collide(m_enemyEntities[i].get());
             }
         }
     }
@@ -270,10 +257,10 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
     return results;
 }
 
-void GameEngine::addPlayer(Player* newPlayer)
+void GameEngine::addPlayer(std::unique_ptr<Player> newPlayer)
 {
-    m_playerEntities.push_back(newPlayer);
     newPlayer->m_parentGameEngine = this;
+    m_playerEntities.push_back(std::move(newPlayer));
 }
 
 sf::Vector2f GameEngine::getPlayerPosition()
@@ -281,41 +268,44 @@ sf::Vector2f GameEngine::getPlayerPosition()
     return m_playerEntities[0]->m_colliderComponent.m_colliders[0].getPosition();
 }
 
-void GameEngine::addWallEntity(GameObjectWall* newEntity)
+void GameEngine::addWallEntity(std::unique_ptr<GameObjectWall> newEntity)
 {
-    m_gameWallEntities.push_back(newEntity);
     newEntity->m_parentGameEngine = this;
+    m_gameWallEntities.push_back(std::move(newEntity));
 }
 
 std::vector<GameObjectWall*> GameEngine::getWalls()
 {
-    return m_gameWallEntities;
+    std::vector<GameObjectWall*> results;
+	for (auto& wall : m_gameWallEntities)
+		results.push_back(wall.get());
+    return results;
 }
 
-void GameEngine::addEnemy(GameActorEnemy* newEnemy)
+void GameEngine::addEnemy(std::unique_ptr<GameActorEnemy> newEnemy)
 {
-    m_enemyEntities.push_back(newEnemy);
     newEnemy->m_parentGameEngine = this;
+    m_enemyEntities.push_back(std::move(newEnemy));
 }
 
-void GameEngine::addCollectible(GameObjectPowerup* newCollectible)
+void GameEngine::addCollectible(std::unique_ptr<GameObjectPowerup> newCollectible)
 {
-    m_collectibleEntities.push_back(newCollectible);
+    m_collectibleEntities.push_back(std::move(newCollectible));
 }
 
-void GameEngine::addScenery(Scenery* newScenery)
+void GameEngine::addScenery(std::unique_ptr<Scenery> newScenery)
 {
-    m_sceneryEntities.push_back(newScenery);
+    m_sceneryEntities.push_back(std::move(newScenery));
 }
 
-void GameEngine::addTrigger(GameObjectBase* newTrigger)
+void GameEngine::addTrigger(std::unique_ptr<GameObjectBase> newTrigger)
 {
-    m_triggerEntities.push_back(newTrigger);
+    m_triggerEntities.push_back(std::move(newTrigger));
 }
 
-void GameEngine::addPlayerHealthBar(HealthBar* hpBar)
+void GameEngine::addPlayerHealthBar(std::unique_ptr<HealthBar> hpBar)
 {
-    m_playerHealthBar = hpBar;
+    m_playerHealthBar = std::move(hpBar);
 }
 
 bool GameEngine::gameOver()
