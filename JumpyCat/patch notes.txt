@@ -49,7 +49,7 @@ collectible placement;
 observer pattern for game events + achievements - UI;
 still working on message system graphics;
 
-0.11 - latest release
+0.11
 all entities in engine are unique pointers now;
 
 0.12 - WIP

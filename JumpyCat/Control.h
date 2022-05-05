@@ -11,4 +11,5 @@ static enum class CONTROLS
     RELEASED_LEFT,
     PRESSED_RIGHT,
     RELEASED_RIGHT,
+    PRESSED_ENTER
 };

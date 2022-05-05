@@ -15,6 +15,7 @@
 #include "GameActorEnemy.h"
 #include "Player.h"
 #include "HealthBar.h"
+#include "GameEngineState.h"
 
 class GameEngine : public IUpdatable, public sf::Drawable
 {
@@ -58,6 +59,8 @@ private:
     bool m_keyPressedUp;
     bool m_keyPressedLeft;
     bool m_keyPressedRight;
+
+    IGameEngineState* m_currentState;
 
     std::vector<std::unique_ptr<GameObjectWall>> m_gameWallEntities;
     std::vector< std::unique_ptr<GameObjectPowerup>> m_collectibleEntities;

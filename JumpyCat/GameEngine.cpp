@@ -11,8 +11,9 @@ GameEngine::GameEngine() :
     m_frameTimeAccumulator{ 0.0f },
     m_gameEnded{ false },
 	m_doorOpen{ false }
-{
+{ 
     m_frameTime = 1 / m_frameRate;
+    m_currentState = new GameEngineStateMenu();
 }
 
 GameEngine::~GameEngine()
@@ -24,7 +25,7 @@ void GameEngine::update(float dt)
     while (m_frameTimeAccumulator > m_frameTime)
     {
         m_frameTimeAccumulator -= m_frameTime;
-
+		
 		for (auto& player : m_playerEntities)
 			player->update(m_frameTime);
         for (auto& entity : m_collectibleEntities)
