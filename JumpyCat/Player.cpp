@@ -242,7 +242,7 @@ void Player::collideTrigger(GameObjectBase* collidedObject)
 {
     if (m_parentGameEngine->isDoorOpen())
     {
-        m_parentGameEngine->victory();
+        m_parentGameEngine->triggerVictory();
     }
 }
 

@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{0359c187-8041-4b2d-aff2-df7fd9b7d2d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sounds">
+      <UniqueIdentifier>{63e82e4b-16a9-4559-8228-c44bb719e39d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -87,6 +93,12 @@
     <ClInclude Include="GameEngineState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp">
@@ -157,5 +169,122 @@
     <Text Include="readme.md">
       <Filter>Resource Files</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\graphics\background.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\backgroundEmpty.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_cat_ducking_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_cat_dying_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_cat_falling_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_cat_hurting_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_cat_jumping_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_cat_moving_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_cat_standing_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_cat_walking_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_reaper_attacking_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_reaper_dying_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_reaper_falling_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_reaper_hurting_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_reaper_jumping_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_reaper_standing_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\character_reaper_walking_spritesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\coin.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\door.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\door_open.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\heart.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\heart_empty.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\platformerPack_character.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\platformPack_tilesheet.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\ribbon.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\ribbon_message.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\ribbon_star.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\rune.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\star.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\star_small.png">
+      <Filter>graphics</Filter>
+    </Image>
+    <Image Include="assets\graphics\tile.png">
+      <Filter>graphics</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\sounds\cat_jumping.ogg">
+      <Filter>sounds</Filter>
+    </None>
+    <None Include="assets\sounds\powerup_coin.ogg">
+      <Filter>sounds</Filter>
+    </None>
+    <None Include="assets\sounds\powerup_coin2.ogg">
+      <Filter>sounds</Filter>
+    </None>
+    <None Include="assets\sounds\powerup_rune.ogg">
+      <Filter>sounds</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\Roboto-Bold.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="assets\stencil.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

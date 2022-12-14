@@ -1,6 +1,6 @@
 #pragma once
 
-static enum class CONTROLS
+enum class CONTROLS
 {
     NOTHING,
     PRESSED_DOWN,
@@ -11,5 +11,8 @@ static enum class CONTROLS
     RELEASED_LEFT,
     PRESSED_RIGHT,
     RELEASED_RIGHT,
-    PRESSED_ENTER
+    PRESSED_ENTER,
+    RELEASED_ENTER,
+	PRESSED_ESCAPE,
+	RELEASED_ESCAPE
 };

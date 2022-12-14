@@ -17,7 +17,7 @@ public:
 	}
 };
 
-static enum class GameObjectType
+enum class GameObjectType
 {
 	WALL,
 	PLAYER,
@@ -25,6 +25,13 @@ static enum class GameObjectType
 	COIN,
 	RUNE,
 	DOOR
+};
+
+enum class GameEngineStateName
+{
+	PLAY,
+	MENU,
+	GAMEOVER
 };
 
 struct PlayMessage

@@ -7,13 +7,25 @@ GameEngine::GameEngine() :
     m_keyPressedLeft{ false },
     m_keyPressedRight{ false },
     m_keyPressedUp{ false },
+    m_keyPressedEnter{ false },
+    m_keyPressedEscape{ false },
+    m_inputCooldownTime{ 0.0f },
+    m_downCooldownAccumulator{ 0.0f },
+    m_upCooldownAccumulator{ 0.0f },
+    m_leftCooldownAccumulator{ 0.0f },
+    m_rightCooldownAccumulator{ 0.0f },
+    m_enterCooldownAccumulator{ 0.0f },
+    m_escapeCooldownAccumulator{ 0.0f },
     m_frameRate{ 60.0f },
     m_frameTimeAccumulator{ 0.0f },
     m_gameEnded{ false },
-	m_doorOpen{ false }
+    m_doorOpen{ false },
+    m_buttonsCurrent{ 0 },
+    m_buttonsMaxNumber{ 2 }
 { 
     m_frameTime = 1 / m_frameRate;
     m_currentState = new GameEngineStateMenu();
+    m_currentState->onEntry(*this);
 }
 
 GameEngine::~GameEngine()
@@ -21,59 +33,37 @@ GameEngine::~GameEngine()
 
 void GameEngine::update(float dt)
 {
-    m_frameTimeAccumulator += dt;
-    while (m_frameTimeAccumulator > m_frameTime)
-    {
-        m_frameTimeAccumulator -= m_frameTime;
-		
-		for (auto& player : m_playerEntities)
-			player->update(m_frameTime);
-        for (auto& entity : m_collectibleEntities)
-            entity->update(m_frameTime);
-        for (auto& enemy : m_enemyEntities)
-            enemy->update(m_frameTime);
-		for (auto& wall : m_gameWallEntities)
-            wall->update(m_frameTime);
-        for (auto& trigger : m_triggerEntities)
-			trigger->update(m_frameTime);
-
-		// collisions
-		checkCollisions();
-
-		// ===== CLEANUP =====
-		for (int i = 0; i < m_collectibleEntities.size(); i++)
-		{
-			if (m_collectibleEntities[i]->m_dead)
-			{
-                m_collectibleEntities.erase(m_collectibleEntities.begin() + i);
-				i--;
-			}
-		}
-
-        m_playerHealthBar->update(m_frameTime);
-
-        for (int i = 0; i < m_playerEntities.size(); i++)
-        {
-            if (m_playerEntities[i]->m_dead)
-                m_gameEnded = true;
-        }
-    }
-
+    std::vector<Input> input = collectInput(dt);
+    handleInput(input);
+    m_currentState->update(*this, dt);
 }
 
 void GameEngine::handleInput(std::vector<Input> input)
 {
-    for (auto& player : m_playerEntities)
-        for (auto& command:input)
-            player->handleInput(command);
+	IGameEngineState* newState = m_currentState->handleInput(*this, input);
+	if (newState != nullptr)
+	{
+        m_currentState->onExit(*this);
+        delete m_currentState;
+		
+		m_currentState = newState;
+        m_currentState->onEntry(*this);
+	}
 }
 
-std::vector<Input> GameEngine::collectInput()
+std::vector<Input> GameEngine::collectInput(float dt)
 {
     std::vector<Input> resultsVector;
     std::string name{ "CONTROL" };
     Input result;
     result.control = CONTROLS::NOTHING;
+	
+	m_upCooldownAccumulator = std::fmaxf(0.0f, m_upCooldownAccumulator - dt);
+	m_downCooldownAccumulator = std::fmaxf(0.0f, m_downCooldownAccumulator - dt);
+	m_leftCooldownAccumulator = std::fmaxf(0.0f, m_leftCooldownAccumulator - dt);
+	m_rightCooldownAccumulator = std::fmaxf(0.0f, m_rightCooldownAccumulator - dt);
+	m_enterCooldownAccumulator = std::fmaxf(0.0f, m_enterCooldownAccumulator - dt);
+	m_escapeCooldownAccumulator = std::fmaxf(0.0f, m_escapeCooldownAccumulator - dt);
 
     if (m_keyPressedLeft)
     {
@@ -86,11 +76,12 @@ std::vector<Input> GameEngine::collectInput()
             resultsVector.push_back(result);
         }
     }
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && m_leftCooldownAccumulator == 0.0f)
 	{
         if (Config::showControls)
             if (!m_keyPressedLeft) std::cout << name << ": " << "LEFT pressed\n";
 		m_keyPressedLeft = true;
+		m_leftCooldownAccumulator = m_inputCooldownTime; 
 		result.control = CONTROLS::PRESSED_LEFT;
         resultsVector.push_back(result);
 	}
@@ -106,11 +97,12 @@ std::vector<Input> GameEngine::collectInput()
             resultsVector.push_back(result);
         }
     }
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && m_rightCooldownAccumulator == 0.0f)
 	{
         if (Config::showControls)
             if (!m_keyPressedRight) std::cout << name << ": " << "RIGHT pressed\n";
 		m_keyPressedRight = true;
+		m_rightCooldownAccumulator = m_inputCooldownTime;
 		result.control = CONTROLS::PRESSED_RIGHT;
         resultsVector.push_back(result);
 	}
@@ -126,11 +118,12 @@ std::vector<Input> GameEngine::collectInput()
             resultsVector.push_back(result);
         }
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && m_upCooldownAccumulator == 0.0f)
     {
         if (Config::showControls)
             if (!m_keyPressedUp) std::cout << name << ": " << "UP pressed\n";
         m_keyPressedUp = true;
+		m_upCooldownAccumulator = m_inputCooldownTime;
         result.control = CONTROLS::PRESSED_UP;
         resultsVector.push_back(result);
     }
@@ -146,14 +139,57 @@ std::vector<Input> GameEngine::collectInput()
             resultsVector.push_back(result);
         }
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && m_downCooldownAccumulator == 0.0f)
     {
         if (Config::showControls)
             if (!m_keyPressedDown) std::cout << name << ": " << "DOWN pressed\n";
         m_keyPressedDown = true;
+		m_downCooldownAccumulator = m_inputCooldownTime;
         result.control = CONTROLS::PRESSED_DOWN;
         resultsVector.push_back(result);
     }
+
+    if (m_keyPressedEnter)
+    {
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+        {
+            if (Config::showControls)
+                std::cout << name << ": " << "ENTER released\n";
+            m_keyPressedEnter = false;
+			result.control = CONTROLS::RELEASED_ENTER;
+            resultsVector.push_back(result);
+        }
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && m_enterCooldownAccumulator == 0.0f)
+    {
+        if (Config::showControls)
+            if (!m_keyPressedEnter) std::cout << name << ": " << "ENTER pressed\n";
+        m_keyPressedEnter = true;
+		m_enterCooldownAccumulator = m_inputCooldownTime;
+        result.control = CONTROLS::PRESSED_ENTER;
+        resultsVector.push_back(result);
+    }
+	
+    if (m_keyPressedEscape)
+    {
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+            if (Config::showControls)
+                std::cout << name << ": " << "ESCAPE released\n";
+            m_keyPressedEscape = false;
+            result.control = CONTROLS::RELEASED_ESCAPE;
+            resultsVector.push_back(result);
+        }
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && m_escapeCooldownAccumulator == 0.0f)
+    {
+        if (Config::showControls)
+            if (!m_keyPressedEscape) std::cout << name << ": " << "ESCAPE pressed\n";
+        m_keyPressedEscape = true;
+		m_escapeCooldownAccumulator = m_inputCooldownTime;
+        result.control = CONTROLS::PRESSED_ESCAPE;
+        resultsVector.push_back(result);
+    }		
 
     if (resultsVector.size() == 0)
         resultsVector.push_back(result);
@@ -162,17 +198,39 @@ std::vector<Input> GameEngine::collectInput()
 
 void GameEngine::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    for (auto& scenery : m_sceneryEntities)
-        scenery->draw(target, states);
-    for (auto& wall : m_gameWallEntities)
-        wall->draw(target, states);
-    for (auto& collectible : m_collectibleEntities)
-        collectible->draw(target, states);
-    for (auto& enemy : m_enemyEntities)
-        enemy->draw(target, states);
-    for (auto& player : m_playerEntities)
-        player->draw(target, states);
-    m_playerHealthBar->draw(target, states);
+    switch (m_currentState->getCurrentState())
+    {
+    case GameEngineStateName::PLAY:
+		for (auto& scenery : m_sceneryEntities)
+			scenery->draw(target, states);
+		for (auto& wall : m_gameWallEntities)
+			wall->draw(target, states);
+		for (auto& collectible : m_collectibleEntities)
+			collectible->draw(target, states);
+		for (auto& enemy : m_enemyEntities)
+			enemy->draw(target, states);
+		for (auto& player : m_playerEntities)
+			player->draw(target, states);
+		m_playerHealthBar->draw(target, states);
+        break;
+		
+    case GameEngineStateName::MENU:
+		target.draw(m_textOptionOne);
+		target.draw(m_textOptionTwo);
+        target.draw(m_textOptionSelector);
+
+        target.draw(m_textControlHints);
+        target.draw(m_textTitle);
+        target.draw(*m_menuCat);
+        target.draw(*m_menuPowerup);
+        target.draw(*m_menuCoin);
+        break;
+		
+    case GameEngineStateName::GAMEOVER:
+        
+        break;
+    }
+	
 }
 
 std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollisions()
@@ -309,7 +367,7 @@ void GameEngine::addPlayerHealthBar(std::unique_ptr<HealthBar> hpBar)
     m_playerHealthBar = std::move(hpBar);
 }
 
-bool GameEngine::gameOver()
+bool GameEngine::isGameOver()
 {
     return m_gameEnded;
 }
@@ -325,7 +383,7 @@ bool GameEngine::isDoorOpen()
     return m_doorOpen;
 }
 
-void GameEngine::victory()
+void GameEngine::triggerVictory()
 {
 	m_victory = true;
 }

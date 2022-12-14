@@ -221,6 +221,63 @@ void createBackground(TextureManager& textureManager, GameEngine& engine, sf::Ve
     engine.addScenery(std::move(background));
 }
 
+void loadMenuGraphics(TextureManager& textureManager, GameEngine& engine)
+{
+    engine.m_menuCat = std::make_unique<GameObjectBase>();
+	engine.m_menuCoin = std::make_unique<GameObjectBase>();
+	engine.m_menuPowerup = std::make_unique<GameObjectBase>();
+
+	Animation catAnimation(textureManager.getTexture("cat_standing"), 10, { 542, 474 }, { 400, 350 }, 1.0f, true);
+	engine.m_menuCat->m_graphicsComponent.addAnimation("cat", catAnimation, { 0, 0 });
+	engine.m_menuCat->m_graphicsComponent.m_currentAnimation = "cat";
+	engine.m_menuCat->m_graphicsComponent.m_animations["cat"].m_animationFrames[0].setPosition({ -100, 0 });
+    engine.m_menuCat->m_position = { -100, 100 };
+
+	Animation coinAnimation(textureManager.getTexture("coin"), 1, { 128, 128 }, { 100, 100 }, 0.0f, false);
+	engine.m_menuCoin->m_graphicsComponent.addAnimation("coin", coinAnimation, { 0, 0 });
+	engine.m_menuCoin->m_graphicsComponent.m_currentAnimation = "coin";
+	engine.m_menuCoin->m_graphicsComponent.m_animations["coin"].m_animationFrames[0].setPosition({ -200, -100 });
+    engine.m_menuCoin->m_position = { -200, -100 };
+
+	Animation powerupAnimation(textureManager.getTexture("rune"), 1, { 56, 93 }, { 32, 48 }, 0.0f, false);
+	engine.m_menuPowerup->m_graphicsComponent.addAnimation("rune", powerupAnimation, { 0, 0 });
+	engine.m_menuPowerup->m_graphicsComponent.m_currentAnimation = "rune";
+	engine.m_menuPowerup->m_graphicsComponent.m_animations["rune"].m_animationFrames[0].setPosition({ -100, -100 });
+	engine.m_menuPowerup->m_position = { -100, -100 };
+
+    engine.m_font.loadFromFile("./assets/stencil.ttf");
+
+    engine.m_textOptionOne.setFont(engine.m_font);
+    engine.m_textOptionOne.setString("Start Game");
+    engine.m_textOptionOne.setCharacterSize(50);
+    engine.m_textOptionOne.setFillColor(sf::Color::Black);
+    engine.m_textOptionOne.setPosition(sf::Vector2f(500, 200));
+
+    engine.m_textOptionTwo.setFont(engine.m_font);
+    engine.m_textOptionTwo.setString("Exit");
+    engine.m_textOptionTwo.setCharacterSize(50);
+    engine.m_textOptionTwo.setFillColor(sf::Color::Black);
+    engine.m_textOptionTwo.setPosition(sf::Vector2f(500, 250));
+
+    engine.m_textOptionSelector.setFont(engine.m_font);
+    engine.m_textOptionSelector.setString("-");
+    engine.m_textOptionSelector.setCharacterSize(50);
+    engine.m_textOptionSelector.setFillColor(sf::Color::Black);
+    engine.m_textOptionSelector.setPosition(sf::Vector2f(480, 200));
+
+    engine.m_textTitle.setFont(engine.m_font);
+    engine.m_textTitle.setString("Jumpy Cat");
+    engine.m_textTitle.setCharacterSize(200);
+    engine.m_textTitle.setFillColor(sf::Color::White);
+    engine.m_textTitle.setPosition(sf::Vector2f( -200, -100));
+
+    engine.m_textControlHints.setFont(engine.m_font);
+    engine.m_textControlHints.setString("Enter - Select\n\nUp - Jump\nLeft, Right - move\n\nCollect coins\nRune = double jump");
+    engine.m_textControlHints.setCharacterSize(30);
+    engine.m_textControlHints.setFillColor(sf::Color::White);
+    engine.m_textControlHints.setPosition(sf::Vector2f(0, 500));
+}
+
 void loadScenery(TextureManager& textureManager, GameEngine& engine)
 {
     createBackground(textureManager, engine, { -200, -200 });
@@ -397,6 +454,7 @@ int main()
     bool paused{ false };
     float pauseAccumulator{0.0f};
 
+    loadMenuGraphics(textureManager, engine);
     SoundManager::initialize();
 
     while (window.isOpen())
@@ -413,7 +471,7 @@ int main()
             //config.debug = !config.debug;
         }
 
-        if (engine.gameOver())
+        if (engine.isGameOver())
             window.close();
 
         dt = frameClock.restart().asSeconds();
@@ -440,8 +498,8 @@ int main()
 
         // ===== INPUT =====
         // in engine update
-		std::vector<Input> input = engine.collectInput();
-		engine.handleInput(input);
+		//std::vector<Input> input = engine.collectInput();
+		//engine.handleInput(input);
 
         // ===== UPDATE =====
         engine.update(dt);
@@ -485,10 +543,14 @@ int main()
         window.draw(bck2);
         window.draw(engine);
 
-        window.setView(miniMapView);
-        window.draw(bck3);
-        window.draw(engine);
-        window.draw(frame);
+        // quick temporary (likely eternal) hack
+        if (engine.m_currentState->getCurrentState() == GameEngineStateName::PLAY)
+        {
+			window.setView(miniMapView);
+			window.draw(bck3);
+			window.draw(engine);
+			window.draw(frame);
+        }
 
         window.setView(UIView);
         window.draw(GameMessageSystem::getInstance());
