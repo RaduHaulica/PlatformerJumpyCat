@@ -36,6 +36,8 @@ void GameEngine::update(float dt)
     std::vector<Input> input = collectInput(dt);
     handleInput(input);
     m_currentState->update(*this, dt);
+    if (m_victory)
+        m_gameEnded = true;
 }
 
 void GameEngine::handleInput(std::vector<Input> input)
@@ -295,7 +297,7 @@ std::vector<std::pair<GameObjectBase*, GameObjectBase*>> GameEngine::checkCollis
             if (checkRectangleCollision(m_playerEntities[i]->m_colliderComponent.m_colliders[0], m_triggerEntities[j]->m_colliderComponent.m_colliders[0]))
             {
 				//results.push_back({ m_playerEntities[i].get(), m_triggerEntities[j].get()});
-				m_playerEntities[i]->collide(m_triggerEntities[j].get());
+				m_playerEntities[i]->collideTrigger(m_triggerEntities[j].get());
 				m_triggerEntities[j]->collide(m_playerEntities[i].get());
             }
         }

@@ -242,6 +242,7 @@ void Player::collideTrigger(GameObjectBase* collidedObject)
 {
     if (m_parentGameEngine->isDoorOpen())
     {
+        std::cout << "Open door hit\n";
         m_parentGameEngine->triggerVictory();
     }
 }
