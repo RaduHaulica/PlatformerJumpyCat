@@ -37,6 +37,10 @@ void SoundManager::initialize()
 	sf::SoundBuffer* runeColectSound = new sf::SoundBuffer();
 	runeColectSound->loadFromFile(basePath + "powerup_rune.ogg");
 	self.m_sounds.insert_or_assign("rune_collected", runeColectSound);
+
+	sf::SoundBuffer* achievementSound = new sf::SoundBuffer();
+	achievementSound->loadFromFile(basePath + "achievement.ogg");
+	self.m_sounds.insert_or_assign("achievement", achievementSound);
 }
 
 std::unique_ptr<sf::Sound> SoundManager::getSound(std::string soundName)

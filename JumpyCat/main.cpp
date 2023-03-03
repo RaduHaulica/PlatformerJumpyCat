@@ -382,7 +382,7 @@ int main()
 
     std::unique_ptr<GameObjectBase> door = std::make_unique<GameObjectBase>();
 	loadDoorGraphics(textureManager, *door);
-	door->setPosition({ 500, 600 });
+	door->setPosition({ 500, 500 });
 
     GameEngine engine;
     loadScenery(textureManager, engine);
@@ -406,6 +406,7 @@ int main()
     createCoin(textureManager, engine, { 400, 800 }); // under spawn
 
     createRune(textureManager, engine, { 2100, 300 });
+    //createDoor(textureManager, engine, { 500, 600 });
 
 
     // extended background for main view
@@ -524,12 +525,12 @@ int main()
             mainView.move(sf::Vector2f({ width / 20, 0 }) * dt * 15.0f);
 
         if (playerPosition.y < height / 3)
-            mainView.move(sf::Vector2f({ 0,-height/20 }) * dt * 2.0f);
+            mainView.move(sf::Vector2f({ 0,-height / 20 }) * dt * 2.0f);
         if (playerPosition.y < height / 6)
             mainView.move(sf::Vector2f({ 0,-height / 20 }) * dt * 15.0f);
 
         if (playerPosition.y > 2 * height / 3 - 100)
-            mainView.move(sf::Vector2f({ 0,height/20 }) * dt * 2.0f);
+            mainView.move(sf::Vector2f({ 0,height / 20 }) * dt * 2.0f);
         if (playerPosition.y > 5 * height / 6 - 100)
             mainView.move(sf::Vector2f({ 0,height / 20 }) * dt * 15.0f);
 

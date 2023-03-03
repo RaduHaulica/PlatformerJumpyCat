@@ -110,6 +110,10 @@ void AchievementObserver::onNotify(const Player& entity, Event event)
 			GameMessageSystem::getInstance().addMessage("Mad stacks!", MessageType::ACHIEVEMENT);
 			std::cout << "Stacks overflowing!" << std::endl;
 			m_coinsAchievementUnlocked = true;
+
+			SoundId achievementSound;
+			achievementSound.m_name = "achievement";
+			AudioManager::playSound(achievementSound);
 		}
 		break;
 	case Event::FELL_FROM_HEIGHT:
@@ -118,6 +122,10 @@ void AchievementObserver::onNotify(const Player& entity, Event event)
 			GameMessageSystem::getInstance().addMessage("Leap of faith!", MessageType::ACHIEVEMENT);
 			std::cout << "Leap of faith!" << std::endl;
 			m_fallAchievementUnlocked = true;
+
+			SoundId achievementSound;
+			achievementSound.m_name = "achievement";
+			AudioManager::playSound(achievementSound);
 		}
 		break;
 	}

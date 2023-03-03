@@ -211,6 +211,8 @@ void GameEngine::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			enemy->draw(target, states);
 		for (auto& player : m_playerEntities)
 			player->draw(target, states);
+        for (auto& trigger : m_triggerEntities)
+            trigger->draw(target, states);
 		m_playerHealthBar->draw(target, states);
         break;
 		
