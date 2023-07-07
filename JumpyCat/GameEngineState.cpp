@@ -15,6 +15,7 @@ IGameEngineState* GameEngineStateMenu::handleInput(GameEngine& engine, std::vect
 		if (command.control == CONTROLS::PRESSED_ENTER && engine.m_buttonsCurrent == 1)
 		{
 			engine.triggerVictory();
+			exit(0);
 		}
 		if (command.control == CONTROLS::PRESSED_ENTER && engine.m_buttonsCurrent == 0)
 		{
@@ -70,6 +71,10 @@ IGameEngineState* GameEngineStatePlay::handleInput(GameEngine& engine, std::vect
 	for (auto& player : engine.m_playerEntities)
 		for (auto& command : input)
 			player->handleInput(command);
+	if (engine.isGameOver())
+	{
+		return new GameEngineStateMenu();
+	}
 	return nullptr;
 }
 
@@ -117,12 +122,15 @@ void GameEngineStatePlay::update(GameEngine& engine, float dt)
 
 void GameEngineStatePlay::onEntry(GameEngine& engine)
 {
-
+	engine.m_playerEntities[0].get()->setPosition({ 400, 400 });
+	engine.m_doorOpen = false;
+	engine.m_gameEnded = false;
 }
 
 void GameEngineStatePlay::onExit(GameEngine& engine)
 {
-
+	engine.m_doorOpen = false;
+	engine.m_gameEnded = false;
 }
 
 void GameEngineStatePlay::draw(GameEngine& engine, sf::RenderTarget& target, sf::RenderStates states) const
@@ -161,4 +169,33 @@ void GameEngineStateGameOver::onExit(GameEngine& engine)
 GameEngineStateName GameEngineStateGameOver::getCurrentState()
 {
 	return GameEngineStateName::GAMEOVER;
+}
+
+// ===== =====
+//	 QUIT
+// ===== =====
+
+IGameEngineState* GameEngineStateQuit::handleInput(GameEngine& engine, std::vector<Input> input)
+{
+	return nullptr;
+}
+
+void GameEngineStateQuit::update(GameEngine& engine, float dt)
+{
+
+}
+
+void GameEngineStateQuit::onEntry(GameEngine& engine)
+{
+
+}
+
+void GameEngineStateQuit::onExit(GameEngine& engine)
+{
+
+}
+
+GameEngineStateName GameEngineStateQuit::getCurrentState()
+{
+	return GameEngineStateName::QUIT;
 }

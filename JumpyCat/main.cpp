@@ -463,7 +463,7 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed || engine.m_currentState->getCurrentState() == GameEngineStateName::QUIT)
                 window.close();
         }
 
@@ -472,8 +472,9 @@ int main()
             //config.debug = !config.debug;
         }
 
-        if (engine.isGameOver())
-            window.close();
+        // ===== this used to stand in for missing functionality in game engine state management
+        //if (engine.isGameOver())
+        //    window.close();
 
         dt = frameClock.restart().asSeconds();
         

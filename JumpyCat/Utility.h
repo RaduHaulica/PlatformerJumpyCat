@@ -31,7 +31,8 @@ enum class GameEngineStateName
 {
 	PLAY,
 	MENU,
-	GAMEOVER
+	GAMEOVER,
+	QUIT
 };
 
 struct PlayMessage
