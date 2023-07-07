@@ -226,8 +226,8 @@ void GameEngine::draw(sf::RenderTarget& target, sf::RenderStates states) const
         target.draw(m_textControlHints);
         target.draw(m_textTitle);
         target.draw(*m_menuCat);
-        target.draw(*m_menuPowerup);
-        target.draw(*m_menuCoin);
+        //target.draw(*m_menuPowerup);
+        //target.draw(*m_menuCoin);
         break;
 		
     case GameEngineStateName::GAMEOVER:

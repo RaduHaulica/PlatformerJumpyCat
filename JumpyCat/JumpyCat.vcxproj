@@ -69,10 +69,6 @@
     <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="patch notes.txt" />
-    <Text Include="readme.md" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="assets\graphics\background.png" />
     <Image Include="assets\graphics\backgroundEmpty.png" />
     <Image Include="assets\graphics\character_cat_ducking_spritesheet.png" />
@@ -104,8 +100,19 @@
     <Image Include="assets\graphics\star.png" />
     <Image Include="assets\graphics\star_small.png" />
     <Image Include="assets\graphics\tile.png" />
+    <Image Include="media\platformer achievement.png" />
+    <Image Include="media\platformer enemy.png" />
+    <Image Include="media\platformer generic.png" />
+    <Image Include="media\platformer jumping cat colliders.gif" />
+    <Image Include="media\platformer jumpy cat double jump.gif" />
+    <Image Include="media\platformer jumpy cat enemy patrol.gif" />
+    <Image Include="media\platformer jumpy cat idle.gif" />
+    <Image Include="media\platformer jumpy cat.gif" />
+    <Image Include="media\platformer rune.png" />
+    <Image Include="media\platformer title screen.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\readme.md" />
     <None Include="assets\sounds\cat_jumping.ogg" />
     <None Include="assets\sounds\powerup_coin.ogg" />
     <None Include="assets\sounds\powerup_coin2.ogg" />
@@ -114,6 +121,9 @@
   <ItemGroup>
     <Font Include="assets\Roboto-Bold.ttf" />
     <Font Include="assets\stencil.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\patch notes.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

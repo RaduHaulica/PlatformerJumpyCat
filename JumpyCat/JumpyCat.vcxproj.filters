@@ -19,6 +19,9 @@
     <Filter Include="sounds">
       <UniqueIdentifier>{63e82e4b-16a9-4559-8228-c44bb719e39d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="media">
+      <UniqueIdentifier>{f28fbb93-ab46-4e0c-ae6e-1612d1865f0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -163,14 +166,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="patch notes.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="readme.md">
-      <Filter>Resource Files</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="assets\graphics\background.png">
       <Filter>graphics</Filter>
     </Image>
@@ -264,6 +259,36 @@
     <Image Include="assets\graphics\tile.png">
       <Filter>graphics</Filter>
     </Image>
+    <Image Include="media\platformer achievement.png">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer enemy.png">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer generic.png">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer jumping cat colliders.gif">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer jumpy cat double jump.gif">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer jumpy cat enemy patrol.gif">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer jumpy cat idle.gif">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer jumpy cat.gif">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer rune.png">
+      <Filter>media</Filter>
+    </Image>
+    <Image Include="media\platformer title screen.png">
+      <Filter>media</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\sounds\cat_jumping.ogg">
@@ -278,6 +303,9 @@
     <None Include="assets\sounds\powerup_rune.ogg">
       <Filter>sounds</Filter>
     </None>
+    <None Include="..\readme.md">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\Roboto-Bold.ttf">
@@ -286,5 +314,10 @@
     <Font Include="assets\stencil.ttf">
       <Filter>Resource Files</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\patch notes.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
