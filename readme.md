@@ -4,7 +4,7 @@ Just a cat jumping around collecting stuff and staying out of trouble.
 
 ![JumpyCat title image](https://github.com/RaduHaulica/PlatformerJumpyCat/blob/d9a80b6b7afa1822c034b504a31d1b6b5f17e473/JumpyCat/media/platformer%20jumpy%20cat.gif)
 
-A useful learning exercise, which is also why a lot of stuff is still wonky.
+A useful learning exercise, tried out a bunch of new things like looped animations based on character state, having a minimap, smooth scrolling camera.
 
 ## Features
 
@@ -20,11 +20,11 @@ Keep an eye on the minimap to see the location of collectable coins and the rune
 
 ## Technical stuff
 
-An engine class runs everything with a FSM handling the menu, playing, quitting. It's pretty broken for now, a lot of initialization happens outside the class.
+An engine class runs everything with a FSM handling the menu, playing, quitting.
 
 A base game object class based on a few interfaces and components then gets derived to create walls, powerups, enemies and the player character.
 
-Component classes for graphics, collisions.
+Component classes for graphics, colliders.
 
 Observer pattern used for playing sounds, in-game triggers, in-game message system and achievements.
 
@@ -42,4 +42,6 @@ Dev mode feature flags for displaying object bounding boxes, sprite bounding box
 
 Fixed step physics update (60 Hz) so stuff doesn't go through walls by accident during a frame rate drop.
 
-Almost proper animations. Each state (for the player character and enemies) has a different loop assembled from a sprite sheet, but I didn't bother properly aligning everything. Power ups use a sin function to smooth animation and look more interactive.
+Almost proper animations. Each state (for the player character and enemies) has a different loop assembled from a sprite sheet.
+
+Power ups use a sin function to smooth animation and look more interactive.
