@@ -4,13 +4,13 @@ Just a cat jumping around collecting stuff and staying out of trouble.
 
 ![JumpyCat title image](https://github.com/RaduHaulica/PlatformerJumpyCat/blob/d9a80b6b7afa1822c034b504a31d1b6b5f17e473/JumpyCat/media/platformer%20jumpy%20cat.gif)
 
-A useful learning exercise, tried out a bunch of new things like looped animations based on character state, having a minimap, smooth scrolling camera.
+A useful learning exercise, tried out a bunch of new things like looped animations based on character state, an achievement system, having a minimap, smooth scrolling camera.
 
 ## Features
 
 You play as a cat. No other features needed, really, but I still added a few.
 
-Run around, jump between platforms, avoid touching enemies, collect coins to open the door to the next level.
+Run around, jump between platforms, avoid touching those pesky enemies, and collect coins to open the door to the next level.
 
 Get achievements by falling from a great height and by collecting all the coins in the level.
 
@@ -30,11 +30,13 @@ Observer pattern used for playing sounds, in-game triggers, in-game message syst
 
 ![achievement and messaging system](https://github.com/RaduHaulica/PlatformerJumpyCat/blob/d9a80b6b7afa1822c034b504a31d1b6b5f17e473/JumpyCat/media/platformer%20achievement.png)
 
+Invulnerability frames after getting damaged by an enemy.
+
 Control is handled by collecting a vector of inputs then sending a vector of commands to the current player state for processing.
 
 FSMs manage game state and player and enemy behavior.
 
-HUD (health bar, high score), minimap (rudimentary, basically the whole scene rendered in a smaller screen area), camera scrolling.
+HUD (health bar, high score), minimap, smooth camera scrolling.
 
 Jumping has a bit of hang time and coyote time to improve the general feel and stops as soon as you bonk your head on a ceiling.
 
